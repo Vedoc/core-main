@@ -1,0 +1,77 @@
+en:
+  notifications:
+    friendly_reminder: 'Friendly Reminder: Oil change is recommended every 10 thousand miles for the average vehicle. Contact one of our VEDOC shops and find the best offer that best suits your budget!'
+    hire: 'Your offer has been accepted'
+    new_offer: 'You have received an offer from a shop'
+    new_message: 'You have new message'
+    new_offer_photos: 'New photos were attached to the listing'
+    new_service_request: 'You have received a new listing'
+  date:
+    formats:
+      default: '%d/%m/%Y'
+  time:
+    formats:
+      default: '%d/%m/%Y %H:%M'
+  pundit:
+    errors:
+      unauthorized: 'Not enough permissions to perform this action'
+  client:
+    errors:
+      not_found: 'Client not found'
+  recepient:
+    errors:
+      not_found: 'Recepient not found'
+  offer:
+    errors:
+      not_found: 'Offer not found'
+  shop:
+    errors:
+      not_found: 'Shop not found'
+  service_request:
+    errors:
+      not_found: 'Service Request not found'
+      destroy: 'Service Request cannot be destroyed'
+  offer:
+    errors:
+      not_found: 'Offer not found'
+  vehicle:
+    errors:
+      requests_exist: 'Car cannot be deleted while active listings with it remain' 
+      not_found: 'Vehicle not found'
+      destroy: 'Vehicle cannot be destroyed'
+  promo_code:
+    errors:
+      email: "Email can't be blank"
+      not_found: 'Promocode not found'
+  charge:
+    new_service_request: 'New Service Request has been created'
+    offer_accepted: 'Offer has been accepted'
+    errors:
+      base: 'Charge cannot be created'
+  password_reset:
+    success: 'Password has been updated'
+    errors:
+      not_found: 'Account not found'
+      expired: 'Token has expired'
+  activerecord:
+    attributes:
+      account:
+        promo_code: 'Promocode'
+    errors:
+      models:
+        shop:
+          attributes:
+            categories:
+              invalid: 'have invalid value'
+            pictures:
+              not_enough: 'has not enough items'
+  devise_token_auth:
+    passwords:
+      sended: "An email has been sent to '%{email}' containing instructions for resetting your password"
+    sessions:
+        bad_credentials: 'Wrong email or password'
+        not_confirmed: 'Your account has not been approved yet'
+  devise:
+    mailer:
+      reset_password_instructions:
+        request_reset_link_msg: 'Someone has requested a code to change your password. You can do this using the code below.'
