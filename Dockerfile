@@ -39,7 +39,7 @@ COPY package.json yarn.lock .yarnclean /app/
 RUN yarn install
 
 # Add the Rails app
-COPY . /app
+COPY . .
 
 # Precompile assets
 RUN bundle exec rake assets:precompile
