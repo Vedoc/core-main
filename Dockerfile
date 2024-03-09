@@ -1,6 +1,6 @@
 ######################
 # Stage: Builder
-FROM ruby:3.3.0-alpine3.7 as Builder
+FROM ruby:3.0.0-alpine as Builder
 
 ARG FOLDERS_TO_REMOVE
 ARG BUNDLE_WITHOUT
@@ -28,26 +28,25 @@ COPY Gemfile* /app/
 RUN bundle config --global frozen 1 \
  && bundle config "https://github.com/Vedoc/core-main.git" $GIT_CREDENTIALS \
  && bundle install -j4 --retry 3 \
- # Remove unneeded files (cached *.gem, *.o, *.c)
  && rm -rf /usr/local/bundle/cache/*.gem \
  && find /usr/local/bundle/gems/ -name "*.c" -delete \
  && find /usr/local/bundle/gems/ -name "*.o" -delete
 
 # Install yarn packages
-# COPY package.json yarn.lock .yarnclean /app/
-# RUN yarn install
+COPY package.json yarn.lock .yarnclean /app/
+RUN yarn install
 
 # Add the Rails app
 COPY . /app
 
 # Precompile assets
-# RUN bundle exec rake assets:precompile
+RUN bundle exec rake assets:precompile
 
 # Remove folders not needed in resulting image
 RUN rm -rf $FOLDERS_TO_REMOVE
 
 # Stage Final
-FROM ruby:3.3.0-alpine3.7
+FROM ruby:3.0.0-alpine
 
 ARG ADDITIONAL_PACKAGES
 ARG EXECJS_RUNTIME
@@ -82,8 +81,5 @@ EXPOSE 3000
 # Save timestamp of image building
 RUN date -u > BUILD_TIME
 
-# Copy startup scripts
-COPY docker/ docker/
-
 # Start up
-CMD ["docker/startup.sh"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]

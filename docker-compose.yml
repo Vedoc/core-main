@@ -36,7 +36,7 @@ services:
       - redis-data:/data
 
   app: &app_base
-    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/core:development
+    image: registry.github.com/Vedoc/core-main:development
     build:
       context: .
       args:
@@ -97,7 +97,7 @@ services:
       start_period: 1m
 
   admin:
-    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/admin-panel:development
+    image: registry.github.com/Vedoc/Admin-Panel:development
     build:
       context: ../vedoc-admin
       args:
@@ -140,7 +140,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/vedoc-chat:development
+    image: registry.github.com/Vedoc/Vedoc-chat:development
     build: ../chat-node
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]
