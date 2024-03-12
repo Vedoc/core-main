@@ -26,7 +26,7 @@ vendor/bundle
 /config/master.key
 
 # Env files
-.env
+# .env
 
 # Simplecov
 coverage
