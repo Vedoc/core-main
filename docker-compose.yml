@@ -7,10 +7,6 @@ services:
       POSTGRES_DB: "${DB_NAME}"
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
-    environment:
-      - DB_NAME=vedoc-api_development
-      - DB_USER=postgres
-      - DB_PASSWORD=password
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -21,6 +17,7 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
+
 
   redis:
     image: redis:4.0-alpine
