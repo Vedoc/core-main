@@ -48,7 +48,9 @@ COPY . .
 RUN rm -rf $FOLDERS_TO_REMOVE
 
 # Copy master.key file into the container
-COPY config/master.key /app/config/master.key
+# COPY config/master.key /app/config/master.key
+COPY master.key /app/config/master.key
+
 
 # Stage Final
 FROM ruby:3.0.2-alpine
