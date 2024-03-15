@@ -47,6 +47,9 @@ COPY . .
 # Remove folders not needed in resulting image
 RUN rm -rf $FOLDERS_TO_REMOVE
 
+# Copy master.key file into the container
+COPY config/master.key /app/config/master.key
+
 # Stage Final
 FROM ruby:3.0.2-alpine
 
@@ -79,6 +82,12 @@ WORKDIR /app
 
 # Expose Puma port
 EXPOSE 3000
+
+# Set RAILS_MASTER_KEY environment variable
+COPY --from=Builder /app/config/master.key /tmp/master.key
+RUN export RAILS_MASTER_KEY=$(cat /tmp/master.key) && \
+    rm /tmp/master.key && \
+    echo "RAILS_MASTER_KEY=$RAILS_MASTER_KEY" >> /etc/environment
 
 # Save timestamp of image building
 RUN date -u > BUILD_TIME
