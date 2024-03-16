@@ -1,3 +1,5 @@
-redis_config = { url: ENV[ 'REDIS_URL' ] }
+# config/initializers/redis.rb
 
-Redis.current = Redis::Namespace.new 'vedoc_api', redis: Redis.new( redis_config )
+redis_config = { url: ENV['REDIS_URL'] }
+
+$redis = Redis::Namespace.new('vedoc_api', redis: Redis.new(redis_config))
