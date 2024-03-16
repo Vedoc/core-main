@@ -1,6 +1,7 @@
 GIT
   remote: https://github.com/Vedoc/Vedoc-Plugin.git
   revision: a8a9881517810e26e2c1005ebdc89db2260a3eef
+  branch: main
   specs:
     vedoc-plugin (0.1.0)
       rails (>= 7.1.3.2)
@@ -485,7 +486,7 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord-postgis-adapter
-  bootsnap (>= 1.1.0)
+  bootsnap (~> 1.18.3)
   brakeman
   byebug
   carrierwave

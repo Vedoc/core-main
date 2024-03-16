@@ -6,7 +6,7 @@ ruby '3.3.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.1.3.2'
 # Vedoc app models
-gem 'vedoc-plugin', git: 'https://github.com/Vedoc/Vedoc-Plugin.git'
+gem 'vedoc-plugin', git: 'https://github.com/Vedoc/Vedoc-Plugin.git', branch: 'main'
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
@@ -38,7 +38,8 @@ gem 'sidekiq-cron'
 # gem 'capistrano-rails', group: :development
 
 # Reduces boot times through caching; required in config/boot.rb
-gem 'bootsnap', '>= 1.1.0', require: false
+# gem 'bootsnap', '>= 1.1.0', require: false
+gem 'bootsnap', '~> 1.18.3', require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 # gem 'rack-cors'
