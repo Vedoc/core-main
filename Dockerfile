@@ -3,7 +3,7 @@
 FROM ruby:3.3.0-alpine as Builder
 
 # Copy the master.key file into the container
-COPY config/master.key /app/config/master.key
+# COPY config/master.key /app/config/master.key
 
 ARG FOLDERS_TO_REMOVE
 ARG BUNDLE_WITHOUT
