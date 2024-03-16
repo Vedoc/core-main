@@ -44,7 +44,7 @@ COPY . .
 # Copy the master.key file into the container
 # COPY config/master.key /app/config/master.key
 
-COPY .env /app/.env
+# COPY .env /app/.env
 
 # Precompile assets
 # RUN bundle exec rake assets:precompile
