@@ -15,7 +15,7 @@ port ENV.fetch('PORT') { 3000 }
 #
 environment ENV.fetch('RAILS_ENV') { 'development' }
 
-# Define the app block using Rack::Handler::Default
+# Define the app block using Rackup::Handler::Default
 app = Rack::Handler::Default.build(Rails.application)
 
 # Allow puma to be restarted by `rails restart` command.
