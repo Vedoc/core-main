@@ -15,11 +15,9 @@ port ENV.fetch('PORT') { 3000 }
 #
 environment ENV.fetch('RAILS_ENV') { 'development' }
 
-# Define the app block using Rackup::Builder
-app do
-  Rack::Builder.new {
-    run Rails.application
-  }
+# Define the app block as a Rack application
+app do |env|
+  Rails.application.call(env)
 end
 
 # Allow puma to be restarted by `rails restart` command.
