@@ -1,4 +1,4 @@
-class DeviseTokenAuthCreateAccounts < ActiveRecord::Migration[ 5.2 ]
+class DeviseTokenAuthCreateAccounts < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table( :accounts ) do | t |
       ## Required

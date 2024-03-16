@@ -1,4 +1,4 @@
-class CreatePromoCodes < ActiveRecord::Migration[ 5.2 ]
+class CreatePromoCodes < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :promo_codes do | t |
       t.references :shop, index: true, null: false

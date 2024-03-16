@@ -1,4 +1,4 @@
-class CreateOffers < ActiveRecord::Migration[ 5.2 ]
+class CreateOffers < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :offers do | t |
       t.belongs_to :service_request, index: true, null: false

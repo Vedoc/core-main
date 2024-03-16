@@ -1,4 +1,4 @@
-class CreateServiceRequests < ActiveRecord::Migration[ 5.2 ]
+class CreateServiceRequests < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :service_requests do | t |
       t.text       :summary, null: false, default: ''

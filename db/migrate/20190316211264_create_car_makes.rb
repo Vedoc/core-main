@@ -1,4 +1,4 @@
-class CreateCarMakes < ActiveRecord::Migration[ 5.2 ]
+class CreateCarMakes < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :car_makes do | t |
       t.string :name, null: false, default: ''

@@ -1,4 +1,4 @@
-class CreateShops < ActiveRecord::Migration[ 5.2 ]
+class CreateShops < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :shops do | t |
       t.string   :name, default: '', null: false, index: { unique: true }

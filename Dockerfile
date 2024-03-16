@@ -1,6 +1,6 @@
 ######################
 # Stage: Builder
-FROM ruby:3.0.2-alpine as Builder
+FROM ruby:3.3.0-alpine as Builder
 
 # Copy the master.key file into the container
 COPY config/master.key /app/config/master.key
@@ -51,7 +51,7 @@ COPY . .
 RUN rm -rf $FOLDERS_TO_REMOVE
 
 # Stage Final
-FROM ruby:3.0.2-alpine
+FROM ruby:3.3.0-alpine
 
 ARG ADDITIONAL_PACKAGES
 ARG EXECJS_RUNTIME

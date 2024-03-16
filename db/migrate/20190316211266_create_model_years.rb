@@ -1,4 +1,4 @@
-class CreateModelYears < ActiveRecord::Migration[ 5.2 ]
+class CreateModelYears < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :model_years do | t |
       t.integer :year, null: false, default: ''

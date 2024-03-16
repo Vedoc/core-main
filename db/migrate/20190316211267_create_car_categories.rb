@@ -1,4 +1,4 @@
-class CreateCarCategories < ActiveRecord::Migration[ 5.2 ]
+class CreateCarCategories < ActiveRecord::Migration[ 7.1 ]
   def change
     create_table :car_categories do | t |
       t.string :name, null: false, default: '', index: { unique: true }
