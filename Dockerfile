@@ -2,9 +2,6 @@
 # Stage: Builder
 FROM ruby:3.3.0-alpine as Builder
 
-# Copy the master.key file into the container
-# COPY config/master.key /app/config/master.key
-
 ARG FOLDERS_TO_REMOVE
 ARG BUNDLE_WITHOUT
 ARG RAILS_ENV
@@ -43,6 +40,11 @@ RUN bundle config --global frozen 1 \
 
 # Add the Rails app
 COPY . .
+
+# Copy the master.key file into the container
+# COPY config/master.key /app/config/master.key
+
+COPY .env /app/.env
 
 # Precompile assets
 # RUN bundle exec rake assets:precompile
