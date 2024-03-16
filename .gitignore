@@ -23,7 +23,7 @@ vendor/bundle
 .byebug_history
 
 # Ignore master key for decrypting credentials and more.
-# /config/master.key
+/config/master.key
 
 # Env files
 # .env
@@ -32,3 +32,5 @@ vendor/bundle
 coverage
 
 docker-compose.production.*
+
+/config/master.key
