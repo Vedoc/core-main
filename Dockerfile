@@ -52,6 +52,10 @@ COPY . .
 # Remove folders not needed in resulting image
 RUN rm -rf $FOLDERS_TO_REMOVE
 
+# Initialize PostgreSQL database
+RUN mkdir -p /docker-entrypoint-initdb.d
+COPY init.sql /docker-entrypoint-initdb.d/
+
 # Stage Final
 FROM ruby:3.3.0-alpine
 
