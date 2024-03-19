@@ -2,6 +2,9 @@
 # Stage: Builder
 FROM ruby:3.3.0-alpine as Builder
 
+# Install Bundler 2.5.6
+RUN gem install bundler -v '2.5.6'
+
 ARG FOLDERS_TO_REMOVE
 ARG BUNDLE_WITHOUT
 ARG RAILS_ENV
