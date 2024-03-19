@@ -137,7 +137,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.github.com/vedoc/chat-node:development
+    image: registry.github.com/vedoc/vedoc-chat:development
     build: ../chat-node
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]
