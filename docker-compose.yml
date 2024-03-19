@@ -138,7 +138,7 @@ services:
 
   chat:
     image: registry.github.com/vedoc/vedoc-chat:development
-    build: ../chat-node
+    build: ../vedoc-chat
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]
     environment:
