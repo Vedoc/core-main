@@ -29,13 +29,23 @@ RUN apk add --update --no-cache \
 WORKDIR /app
 
 # Install gems
+# COPY Gemfile* /app/
+# RUN bundle config --global frozen 1 \
+#  && bundle config "https://github.com/Vedoc/core-main.git" $GIT_CREDENTIALS \
+#  && bundle install -j4 --retry 3 \
+#  && rm -rf /usr/local/bundle/cache/*.gem \
+#  && find /usr/local/bundle/gems/ -name "*.c" -delete \
+#  && find /usr/local/bundle/gems/ -name "*.o" -delete
+
+ # Install gems
 COPY Gemfile* /app/
-RUN bundle config --global frozen 1 \
+RUN bundle config frozen false \
  && bundle config "https://github.com/Vedoc/core-main.git" $GIT_CREDENTIALS \
  && bundle install -j4 --retry 3 \
  && rm -rf /usr/local/bundle/cache/*.gem \
  && find /usr/local/bundle/gems/ -name "*.c" -delete \
  && find /usr/local/bundle/gems/ -name "*.o" -delete
+
 
 # Install yarn packages
 # COPY package.json yarn.lock .yarnclean /app/
