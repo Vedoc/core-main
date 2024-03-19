@@ -18,7 +18,6 @@ services:
       timeout: 30s
       retries: 3
 
-
   redis:
     image: redis:4.0-alpine
     networks:
@@ -32,7 +31,7 @@ services:
     volumes:
       - redis-data:/data
 
-  app: &app_base
+  myapp: &app_base  # Changed the service name to lowercase
     image: registry.github.com/Vedoc/core-main:development
     build:
       context: .
@@ -166,4 +165,3 @@ networks:
   database:
   redis:
   mongo:
-  
