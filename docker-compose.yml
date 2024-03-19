@@ -33,7 +33,7 @@ services:
       - redis-data:/data
 
   app: &app_base
-    image: registry.github.com/Vedoc/core-main:development
+    image: registry.github.com/vedoc/core-main:development
     build:
       context: .
       args:
@@ -94,7 +94,7 @@ services:
       start_period: 1m
 
   admin:
-    image: registry.github.com/Vedoc/Admin-Panel:development
+    image: registry.github.com/vedoc/admin-panel:development
     build:
       context: ../Admin-Panel
       args:
@@ -137,7 +137,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.github.com/Vedoc/Vedoc-chat:development
+    image: registry.github.com/vedoc/vedoc-chat:development
     build: ../chat-node
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]

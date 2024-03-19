@@ -6,7 +6,7 @@ ruby '3.3.0'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 7.1.3.2'
 # Vedoc app models
-gem 'vedoc-plugin', git: 'https://github.com/Vedoc/Vedoc-Plugin.git', branch: 'main'
+gem 'vedoc-plugin', git: 'https://github.com/vedoc/vedoc-plugin.git', branch: 'main'
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
