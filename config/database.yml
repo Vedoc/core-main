@@ -19,3 +19,5 @@ test:
 
 production:
   <<: *default
+  username: vedoc
+  password: password
