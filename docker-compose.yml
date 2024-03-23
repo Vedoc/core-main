@@ -96,7 +96,7 @@ services:
   admin:
     image: registry.github.com/vedoc/admin-panel:development
     build:
-      context: ../Admin-Panel
+      context: ../admin-panel
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
