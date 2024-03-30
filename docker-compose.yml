@@ -13,7 +13,7 @@ services:
       - database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U vedoc_api"]
       interval: 30s
       timeout: 30s
       retries: 3
@@ -41,14 +41,14 @@ services:
         - EXECJS_RUNTIME=Node
         - RAILS_ENV=development
         - NODE_ENV=development
-        - GIT_CREDENTIALS=user:password
+        - GIT_CREDENTIALS=user:password123
     environment:
       - APP_HOST=localhost:3000
       # Database
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_NAME=vedoc-api_development
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_USER=vedoc_api
+      - DB_PASSWORD=password123
       # Redis
       - REDIS_URL=redis://redis:6379/0
       - REDIS_SIDEKIQ_URL=redis://redis:6379/1
@@ -58,13 +58,13 @@ services:
       - MAIL_PASSWORD=foobar123
       - SMTP_DOMAIN=smtp.sendgrid.net
       # Stripe & Firebase
-      - STRIPE_SECRET_KEY=foobar123
-      - FIREBASE_SERVER_KEY=foobar123
+      # - STRIPE_SECRET_KEY=foobar123
+      # - FIREBASE_SERVER_KEY=foobar123
       # AWS Credentials
-      - AWS_ACCESS_KEY_ID=foobar123
-      - AWS_SECRET_ACCESS_KEY=foobar123
-      - AWS_BUCKET=foobar123
-      - AWS_REGION=foobar123
+      # - AWS_ACCESS_KEY_ID=foobar123
+      # - AWS_SECRET_ACCESS_KEY=foobar123
+      # - AWS_BUCKET=foobar123
+      # - AWS_REGION=foobar123
       # Admin Credentials
       - ADMIN_EMAIL=admin@mail.com
       - ADMIN_PASSWORD=password
@@ -102,15 +102,15 @@ services:
         - EXECJS_RUNTIME=Node
         - RAILS_ENV=development
         - NODE_ENV=development
-        - GIT_CREDENTIALS=user:password
+        - GIT_CREDENTIALS=user:password123
     environment:
       - APP_HOST=localhost:3001
       - FIREBASE_SERVER_KEY=foobar123
       # Database
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_NAME=vedoc-api_development
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_USER=vedoc_api
+      - DB_PASSWORD=password123
       # Admin Credentials
       - ADMIN_EMAIL=admin@mail.com
       - ADMIN_PASSWORD=password
