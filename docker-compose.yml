@@ -45,7 +45,7 @@ services:
     environment:
       - APP_HOST=localhost:3000
       # Database
-      - DB_HOST=localhost
+      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
       - DB_NAME=vedoc-api_deploy
       - DB_USER=vedoc_api
       - DB_PASSWORD=password123
@@ -107,7 +107,7 @@ services:
       - APP_HOST=localhost:3001
       - FIREBASE_SERVER_KEY=foobar123
       # Database
-      - DB_HOST=localhost
+      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
       - DB_NAME=vedoc-api_deploy
       - DB_USER=vedoc_api
       - DB_PASSWORD=password123
