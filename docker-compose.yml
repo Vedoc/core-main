@@ -31,8 +31,16 @@ services:
     volumes:
       - redis-data:/data
 
-  app:
-    <<: *app_base
+  app_base: &app_base
+    image: registry.github.com/vedoc/core-main:development
+    build:
+      context: .
+      args:
+        - ADDITIONAL_PACKAGES=nodejs-current
+        - EXECJS_RUNTIME=Node
+        - RAILS_ENV=development
+        - NODE_ENV=development
+        - GIT_CREDENTIALS=user:password
     environment:
       - APP_HOST=${APP_HOST}
       # Database
@@ -153,4 +161,3 @@ networks:
   database:
   redis:
   mongo:
-  
