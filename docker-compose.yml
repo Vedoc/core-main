@@ -18,7 +18,6 @@ services:
       timeout: 30s
       retries: 3
 
-
   redis:
     image: redis:6-alpine
     networks:
@@ -32,48 +31,35 @@ services:
     volumes:
       - redis-data:/data
 
-  app: &app_base
-    image: registry.github.com/vedoc/core-main:development
-    build:
-      context: .
-      args:
-        - ADDITIONAL_PACKAGES=nodejs-current
-        - EXECJS_RUNTIME=Node
-        - RAILS_ENV=development
-        - NODE_ENV=development
-        - GIT_CREDENTIALS=user:password
+  app:
+    <<: *app_base
     environment:
-      - APP_HOST=localhost:3000
+      - APP_HOST=${APP_HOST}
       # Database
-      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
-      - DB_NAME=vedoc-api_development
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
       # Redis
-      - REDIS_URL=redis://redis:6379/0
-      - REDIS_SIDEKIQ_URL=redis://redis:6379/1
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_SIDEKIQ_URL=${REDIS_SIDEKIQ_URL}
       # Mailer Credentials
-      - APP_EMAIL=vedoc@team.com
-      - MAIL_USERNAME=vedoc
-      - MAIL_PASSWORD=foobar123
-      - SMTP_DOMAIN=smtp.sendgrid.net
+      - APP_EMAIL=${APP_EMAIL}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - SMTP_DOMAIN=${SMTP_DOMAIN}
       # Stripe & Firebase
-      - STRIPE_SECRET_KEY=foobar123
-      - FIREBASE_SERVER_KEY=foobar123
-      # AWS Credentials
-      # - AWS_ACCESS_KEY_ID=foobar123
-      # - AWS_SECRET_ACCESS_KEY=foobar123
-      # - AWS_BUCKET=foobar123
-      # - AWS_REGION=foobar123
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       # Admin Credentials
-      - ADMIN_EMAIL=admin@mail.com
-      - ADMIN_PASSWORD=password
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       # Mongo
-      - MONGO_USER=admin
-      - MONGO_PASSWORD=password
-      - MONGO_DB=vedoc_chat
-      - MONGO_HOST=mongo:27017
-      - MONGO_COLLECTION=chats
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_COLLECTION=${MONGO_COLLECTION}
     ports:
       - '3000:3000'
     networks:
@@ -105,20 +91,20 @@ services:
         - GIT_CREDENTIALS=user:password
     environment:
       - APP_HOST=localhost:3001
-      - FIREBASE_SERVER_KEY=foobar123
+      - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       # Database
-      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
-      - DB_NAME=vedoc-api_development
-      - DB_USER=postgres
-      - DB_PASSWORD=password
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
       # Admin Credentials
-      - ADMIN_EMAIL=admin@mail.com
-      - ADMIN_PASSWORD=password
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       # Mailer Credentials
-      - APP_EMAIL=vedoc@team.com
-      - MAIL_USERNAME=vedoc
-      - MAIL_PASSWORD=foobar123
-      - SMTP_DOMAIN=smtp.sendgrid.net
+      - APP_EMAIL=${APP_EMAIL}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - SMTP_DOMAIN=${SMTP_DOMAIN}
     ports:
       - '3001:3001'
     networks:
@@ -142,10 +128,10 @@ services:
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]
     environment:
-      MONGO_USER: admin
-      MONGO_PASSWORD: password
-      MONGO_DB: vedoc_chat
-      MONGO_HOST: mongo
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DB: ${MONGO_DB}
+      MONGO_HOST: ${MONGO_HOST}
       WAIT_HOSTS: mongo:27017
       WAIT_HOSTS_TIMEOUT: 60
     links:
