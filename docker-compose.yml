@@ -44,10 +44,10 @@ services:
     environment:
       - APP_HOST=${APP_HOST}
       # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
+      - DB_NAME=database-2
+      - DB_USER=postgres
+      - DB_PASSWORD=hello-world_1234
       # Redis
       - REDIS_URL=${REDIS_URL}
       - REDIS_SIDEKIQ_URL=${REDIS_SIDEKIQ_URL}
@@ -101,10 +101,10 @@ services:
       - APP_HOST=localhost:3001
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
+      - DB_NAME=database-2
+      - DB_USER=postgres
+      - DB_PASSWORD=hello-world_1234
       # Admin Credentials
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
