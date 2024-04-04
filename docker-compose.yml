@@ -101,9 +101,9 @@ services:
       - APP_HOST=localhost:3001
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       # Database
-      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
+      - DB_HOST=localhost
       - DB_NAME=database-1
-      - DB_USER=postgres
+      - DB_USER=postcheck2
       - DB_PASSWORD=Awsvedoc232323
       # Admin Credentials
       - ADMIN_EMAIL=${ADMIN_EMAIL}
