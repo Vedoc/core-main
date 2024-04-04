@@ -44,9 +44,9 @@ services:
     environment:
       - APP_HOST=${APP_HOST}
       # Database
-      - DB_HOST=db
+      - DB_HOST=localhost
       - DB_NAME=database-1
-      - DB_USER=postgres
+      - DB_USER=postchek1
       - DB_PASSWORD=Awsvedoc232323
       # Redis
       - REDIS_URL=${REDIS_URL}
