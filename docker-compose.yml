@@ -24,7 +24,7 @@ services:
       - redis
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli","ping"]
+      test: ["CMD-SHELL", "redis-cli ping"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -44,10 +44,10 @@ services:
     environment:
       - APP_HOST=${APP_HOST}
       # Database
-      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
-      - DB_NAME=database-1
-      - DB_USER=postchek1
-      - DB_PASSWORD=Awsvedoc232323
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
       # Redis
       - REDIS_URL=${REDIS_URL}
       - REDIS_SIDEKIQ_URL=${REDIS_SIDEKIQ_URL}
@@ -99,12 +99,11 @@ services:
         - GIT_CREDENTIALS=user:password
     environment:
       - APP_HOST=localhost:3001
-      - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       # Database
-      - DB_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com
-      - DB_NAME=database-1
-      - DB_USER=postcheck2
-      - DB_PASSWORD=Awsvedoc232323
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
       # Admin Credentials
       - ADMIN_EMAIL=${ADMIN_EMAIL}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -120,7 +119,6 @@ services:
 
   mongo:
     image: mongo:4
-    # command: --smallfiles
     restart: always
     volumes:
       - mongo-data:/data/db
@@ -134,22 +132,20 @@ services:
     image: registry.github.com/vedoc/vedoc-chat:development
     build: ../vedoc-chat
     restart: always
-    # volumes: [ '../chat-node:/usr/src/app' ]
     environment:
-      MONGO_USER: ${MONGO_USER}
-      MONGO_PASSWORD: ${MONGO_PASSWORD}
-      MONGO_DB: ${MONGO_DB}
-      MONGO_HOST: ${MONGO_HOST}
-      WAIT_HOSTS: mongo:27017
-      WAIT_HOSTS_TIMEOUT: 60
+      - MONGO_USER=${MONGO_USER}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DB=${MONGO_DB}
+      - MONGO_HOST=${MONGO_HOST}
+      - WAIT_HOSTS=mongo:27017
+      - WAIT_HOSTS_TIMEOUT=60
     links:
       - mongo
     networks:
-      - socket  
+      - socket
       - mongo
     ports:
       - 8080:8080
-      # - "8080:3000"
 
 volumes:
   db-data:
