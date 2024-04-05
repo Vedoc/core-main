@@ -42,7 +42,7 @@ services:
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
     environment:
-      - APP_HOST=${APP_HOST}/3000
+      - APP_HOST=${APP_HOST}
       # Database
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
@@ -81,7 +81,7 @@ services:
     <<: *app_base
     command: bundle exec sidekiq
     ports:
-      - 5000
+      - '5000:5000'
     healthcheck:
       test: "ps ax | grep -v grep | grep sidekiq"
       interval: 1m
@@ -98,7 +98,7 @@ services:
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
     environment:
-      - APP_HOST=database-1.c8zekncs5jhg.us-east-1.rds.amazonaws.com/3001
+      - APP_HOST=${APP_HOST}
       # Database
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
