@@ -98,7 +98,7 @@ services:
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
     environment:
-      - APP_HOST=localhost:3001
+      - APP_HOST=${APP_HOST}
       # Database
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
