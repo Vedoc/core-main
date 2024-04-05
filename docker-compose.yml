@@ -3,10 +3,14 @@ version: '3.4'
 services:
   db:
     image: mdillon/postgis:11-alpine
+    # environment:
+    #   POSTGRES_DB: "${DB_NAME}"
+    #   POSTGRES_USER: "${DB_USER}"
+    #   POSTGRES_PASSWORD: "${DB_PASSWORD}"
     environment:
-      POSTGRES_DB: "${DB_NAME}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      - DB_NAME=vedoc-api_development
+      - DB_USER=postgres
+      - DB_PASSWORD=password
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -24,15 +28,15 @@ services:
       - redis
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping"]
+      test: ["CMD-SHELL", "redis-cli","ping"]
       interval: 30s
       timeout: 10s
       retries: 3
     volumes:
       - redis-data:/data
 
-  app_base: &app_base
-    image: registry.github.com/vedoc/core-main:development
+  app: &app_base
+    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/core:development
     build:
       context: .
       args:
@@ -42,32 +46,37 @@ services:
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
     environment:
-      - APP_HOST=${APP_HOST}
+      - APP_HOST=localhost:3000
       # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_NAME=vedoc-api_development
+      - DB_USER=postgres
+      - DB_PASSWORD=password
       # Redis
-      - REDIS_URL=${REDIS_URL}
-      - REDIS_SIDEKIQ_URL=${REDIS_SIDEKIQ_URL}
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_SIDEKIQ_URL=redis://redis:6379/1
       # Mailer Credentials
-      - APP_EMAIL=${APP_EMAIL}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SMTP_DOMAIN=${SMTP_DOMAIN}
+      - APP_EMAIL=vedoc@team.com
+      - MAIL_USERNAME=vedoc
+      - MAIL_PASSWORD=foobar123
+      - SMTP_DOMAIN=smtp.sendgrid.net
       # Stripe & Firebase
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
+      - STRIPE_SECRET_KEY=foobar123
+      - FIREBASE_SERVER_KEY=foobar123
+      # AWS Credentials
+      - AWS_ACCESS_KEY_ID=foobar123
+      - AWS_SECRET_ACCESS_KEY=foobar123
+      - AWS_BUCKET=foobar123
+      - AWS_REGION=foobar123
       # Admin Credentials
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=admin@mail.com
+      - ADMIN_PASSWORD=password
       # Mongo
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_COLLECTION=${MONGO_COLLECTION}
+      - MONGO_USER=admin
+      - MONGO_PASSWORD=password
+      - MONGO_DB=vedoc_chat
+      - MONGO_HOST=mongo:27017
+      - MONGO_COLLECTION=chats
     ports:
       - '3000:3000'
     networks:
@@ -88,9 +97,9 @@ services:
       start_period: 1m
 
   admin:
-    image: registry.github.com/vedoc/admin-panel:development
+    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/admin-panel:development
     build:
-      context: ../admin-panel
+      context: ../vedoc-admin
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
@@ -98,20 +107,21 @@ services:
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
     environment:
-      - APP_HOST=${APP_HOST}
+      - APP_HOST=localhost:3001
+      - FIREBASE_SERVER_KEY=foobar123
       # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_NAME=vedoc-api_development
+      - DB_USER=postgres
+      - DB_PASSWORD=password
       # Admin Credentials
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - ADMIN_EMAIL=admin@mail.com
+      - ADMIN_PASSWORD=password
       # Mailer Credentials
-      - APP_EMAIL=${APP_EMAIL}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SMTP_DOMAIN=${SMTP_DOMAIN}
+      - APP_EMAIL=vedoc@team.com
+      - MAIL_USERNAME=vedoc
+      - MAIL_PASSWORD=foobar123
+      - SMTP_DOMAIN=smtp.sendgrid.net
     ports:
       - '3001:3001'
     networks:
@@ -119,6 +129,7 @@ services:
 
   mongo:
     image: mongo:4
+    # command: --smallfiles
     restart: always
     volumes:
       - mongo-data:/data/db
@@ -129,20 +140,21 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.github.com/vedoc/vedoc-chat:development
-    build: ../vedoc-chat
+    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/vedoc-chat:development
+    build: ../chat-node
     restart: always
+    # volumes: [ '../chat-node:/usr/src/app' ]
     environment:
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - WAIT_HOSTS=mongo:27017
-      - WAIT_HOSTS_TIMEOUT=60
+      MONGO_USER: admin
+      MONGO_PASSWORD: password
+      MONGO_DB: vedoc_chat
+      MONGO_HOST: mongo
+      WAIT_HOSTS: mongo:27017
+      WAIT_HOSTS_TIMEOUT: 60
     links:
       - mongo
     networks:
-      - socket
+      - socket  
       - mongo
     ports:
       - 8080:8080
