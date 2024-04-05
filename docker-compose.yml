@@ -140,8 +140,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/vedoc-chat:development
-    build: ../chat-node
+    image: registry.github.com/vedoc/vedoc-chat:development
+    build: ../vedoc-chat
     restart: always
     # volumes: [ '../chat-node:/usr/src/app' ]
     environment:
