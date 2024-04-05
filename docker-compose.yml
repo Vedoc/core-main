@@ -99,7 +99,7 @@ services:
   admin:
     image: registry.gitlab.com/fruktorum/backend/vedoc-vehicle-doctor/admin-panel:development
     build:
-      context: ../vedoc-admin
+      context: ../admin-panel
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
