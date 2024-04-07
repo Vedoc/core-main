@@ -51,7 +51,8 @@ RUN apk add --update --no-cache \
     postgresql-client \
     imagemagick \
     tzdata \
-    file
+    file \
+    git
 
 # Add user
 RUN addgroup -g 1000 -S app \
