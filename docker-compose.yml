@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.4'
 
 x-app_base: &app_base
   build:
@@ -57,7 +57,7 @@ services:
   admin-panel:
     image: registry.github.com/vedoc/admin-panel:development
     build:
-      context: ./admin-panel
+      context: ../admin-panel
     <<: *app_base
     ports:
       - "3001:3001"
