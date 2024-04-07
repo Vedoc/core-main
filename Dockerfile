@@ -23,7 +23,12 @@ RUN apk add --update --no-cache \
     git \
     nodejs-current \
     yarn \
-    tzdata
+    tzdata \
+    file \
+    g++ \
+    make \
+    libc-dev \
+    linux-headers
 
 WORKDIR /app
 
