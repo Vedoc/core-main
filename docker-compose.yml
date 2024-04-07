@@ -50,7 +50,7 @@ services:
         FOLDERS_TO_REMOVE: "log tmp/cache"
         RAILS_ENV: "production"
         NODE_ENV: "production"
-        GIT_CREDENTIALS: "your_git_credentials_here"
+        GIT_CREDENTIALS: "user:password"
     environment:
       - RAILS_ENV=production
       - NODE_ENV=production
