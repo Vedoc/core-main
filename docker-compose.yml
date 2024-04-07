@@ -8,14 +8,14 @@ services:
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql/data
     networks:
       - database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h hello-world.c8zekncs5jhg.us-east-1.rds.amazonaws -U ${POSTGRES_USER}"] 
+      test: ["CMD-SHELL", "pg_isready -h ${DB_HOST} -U ${POSTGRES_USER}"]
       interval: 30s
-      timeout: 30s
+      timeout: 10s
       retries: 3
 
   redis:
@@ -31,129 +31,41 @@ services:
     volumes:
       - redis-data:/data
 
-  app_base: &app_base
-    image: registry.github.com/vedoc/core-main:development
-    build:
-      context: .
-      args:
-        - ADDITIONAL_PACKAGES=nodejs-current
-        - EXECJS_RUNTIME=Node
-        - RAILS_ENV=development
-        - NODE_ENV=development
-        - GIT_CREDENTIALS=user:password
-    environment:
-      - APP_HOST=${APP_HOST}
-      # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      # Redis
-      - REDIS_URL=${REDIS_URL}
-      - REDIS_SIDEKIQ_URL=${REDIS_SIDEKIQ_URL}
-      # Mailer Credentials
-      - APP_EMAIL=${APP_EMAIL}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SMTP_DOMAIN=${SMTP_DOMAIN}
-      # Stripe & Firebase
-      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
-      - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
-      # Admin Credentials
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      # Mongo
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - MONGO_COLLECTION=${MONGO_COLLECTION}
+  core-main:
+    <<: *app_base
     ports:
       - '3000:3000'
     networks:
       - database
       - socket
       - redis
-      - mongo
     restart: always
 
-  worker:
-    <<: *app_base
-    command: bundle exec sidekiq
-    ports:
-      - '5000:5000'
-    healthcheck:
-      test: "ps ax | grep -v grep | grep sidekiq"
-      interval: 1m
-      start_period: 1m
-
-  admin:
+  admin-panel:
     image: registry.github.com/vedoc/admin-panel:development
     build:
-      context: ../admin-panel
+      context: ./Admin-Panel
       args:
-        - ADDITIONAL_PACKAGES=nodejs-current
-        - EXECJS_RUNTIME=Node
-        - RAILS_ENV=development
-        - NODE_ENV=development
-        - GIT_CREDENTIALS=user:password
+        BUNDLE_WITHOUT: "development:test"
+        FOLDERS_TO_REMOVE: "log tmp/cache"
+        RAILS_ENV: "production"
+        NODE_ENV: "production"
+        GIT_CREDENTIALS: "your_git_credentials_here"
     environment:
-      - APP_HOST=${APP_HOST}
-      # Database
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      # Admin Credentials
-      - ADMIN_EMAIL=${ADMIN_EMAIL}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      # Mailer Credentials
-      - APP_EMAIL=${APP_EMAIL}
-      - MAIL_USERNAME=${MAIL_USERNAME}
-      - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - SMTP_DOMAIN=${SMTP_DOMAIN}
+      - RAILS_ENV=production
+      - NODE_ENV=production
     ports:
-      - '3001:3001'
+      - "3001:3001"
+    depends_on:
+      - db
+      - redis
     networks:
       - database
 
-  mongo:
-    image: mongo:4
-    restart: always
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - mongo
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-
-  chat:
-    image: registry.github.com/vedoc/vedoc-chat:development
-    build: ../vedoc-chat
-    restart: always
-    environment:
-      - MONGO_USER=${MONGO_USER}
-      - MONGO_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_DB=${MONGO_DB}
-      - MONGO_HOST=${MONGO_HOST}
-      - WAIT_HOSTS=mongo:27017
-      - WAIT_HOSTS_TIMEOUT=60
-    links:
-      - mongo
-    networks:
-      - socket
-      - mongo
-    ports:
-      - 8080:8080
-
 volumes:
-  db-data:
-  mongo-data:
+  postgres-data:
   redis-data:
 
 networks:
-  socket:
   database:
   redis:
-  mongo:
