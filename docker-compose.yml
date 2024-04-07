@@ -1,5 +1,18 @@
 version: '3.4'
 
+x-app_base: &app_base
+  build:
+    context: .
+    args:
+      BUNDLE_WITHOUT: "development:test"
+      FOLDERS_TO_REMOVE: "log tmp/cache"
+      RAILS_ENV: "production"
+      NODE_ENV: "production"
+      GIT_CREDENTIALS: "user:password"
+  environment:
+    - RAILS_ENV=production
+    - NODE_ENV=production
+
 services:
   db:
     image: mdillon/postgis:11-alpine
@@ -45,15 +58,7 @@ services:
     image: registry.github.com/vedoc/admin-panel:development
     build:
       context: ./Admin-Panel
-      args:
-        BUNDLE_WITHOUT: "development:test"
-        FOLDERS_TO_REMOVE: "log tmp/cache"
-        RAILS_ENV: "production"
-        NODE_ENV: "production"
-        GIT_CREDENTIALS: "user:password"
-    environment:
-      - RAILS_ENV=production
-      - NODE_ENV=production
+    <<: *app_base
     ports:
       - "3001:3001"
     depends_on:
