@@ -13,7 +13,7 @@ services:
       - database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -h hello-world.c8zekncs5jhg.us-east-1.rds.amazonaws -U ${POSTGRES_USER}"] 
       interval: 30s
       timeout: 30s
       retries: 3
