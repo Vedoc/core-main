@@ -94,7 +94,9 @@ group :development, :test do
   # Generate fake data
   gem 'faker'
   # Shim to load environment variables from .env into ENV in development
-  gem 'dotenv-rails'
+  # gem 'dotenv-rails'
+  gem 'dotenv-rails', groups: [:development, :test]
+
   # Allows to automatically & intelligently launch specs when files are modified
   gem 'guard-rspec', require: false
 end
