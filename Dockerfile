@@ -71,7 +71,7 @@ WORKDIR /app
 COPY Gemfile Gemfile.lock ./
 
 # Install gems
-RUN bundle install
+# RUN bundle install
 
 # Copy the rest of the application code
 COPY . .
