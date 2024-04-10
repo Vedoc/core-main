@@ -10,7 +10,6 @@ ARG RAILS_ENV
 ARG NODE_ENV
 ARG GIT_CREDENTIALS
 
-RUN echo "GIT_CREDENTIALS: $GIT_CREDENTIALS"
 
 ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 ENV RAILS_ENV ${RAILS_ENV}
@@ -72,10 +71,10 @@ USER app
 WORKDIR /app
 
 # Copy Gemfile and Gemfile.lock
-COPY Gemfile Gemfile.lock ./
+# COPY Gemfile Gemfile.lock ./
 
 # Install gems
-# RUN bundle install
+RUN bundle install
 
 # Copy the rest of the application code
 COPY . .
