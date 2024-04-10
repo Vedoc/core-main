@@ -1,77 +1,59 @@
 version: '3.8'
 
-x-app_base: &app_base
-  build:
-    context: .
-    args:
-      BUNDLE_WITHOUT: "development:test"
-      FOLDERS_TO_REMOVE: "log tmp/cache"
-      RAILS_ENV: "production"
-      NODE_ENV: "production"
-      GIT_CREDENTIALS: "user:password"
-  environment:
-    - RAILS_ENV=production
-    - NODE_ENV=production
-
 services:
-  db:
-    image: mdillon/postgis:11-alpine
-    environment:
-      POSTGRES_DB: "${DB_NAME}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_PASSWORD: "${DB_PASSWORD}"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - database
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h ${DB_HOST} -U ${POSTGRES_USER}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  redis:
-    image: redis:6-alpine
-    networks:
-      - redis
-    restart: always
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - redis-data:/data
-
-  core-main:
-    <<: *app_base
-    ports:
-      - '3000:3000'
-    networks:
-      - database
-      - redis
-      - socket  # Define the socket network here
-    restart: always
-
-  admin-panel:
-    image: registry.github.com/vedoc/admin-panel:development
+  core_main:
     build:
-      context: ../admin-panel
-    <<: *app_base
+      context: ./core-main
+      args:
+        FOLDERS_TO_REMOVE: 'tmp log'
+        BUNDLE_WITHOUT: 'development test'
+        RAILS_ENV: 'production'
+        NODE_ENV: 'production'
+        GIT_CREDENTIALS: "user:password"
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./core-main:/app
+    command: sh -c "./docker/startup.sh"
+
+  admin_panel:
+    build:
+      context: ./admin-panel
+      args:
+        FOLDERS_TO_REMOVE: 'tmp log'
+        BUNDLE_WITHOUT: 'development test'
+        RAILS_ENV: 'production'
+        NODE_ENV: 'production'
+        GIT_CREDENTIALS: "user:password"
+    env_file: .env
     ports:
       - "3001:3001"
     depends_on:
       - db
-      - redis
-    networks:
-      - database
+      - mongo
+    volumes:
+      - ./admin-panel:/app
+    command: sh -c "./docker/startup.sh"
+
+  db:
+    image: postgres:latest
+    env_file: .env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  mongo:
+    image: mongo:latest
+    env_file: .env
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
 
 volumes:
-  postgres-data:
-  redis-data:
-
-networks:
-  database:
-  redis:
-  socket:  # Define the socket network here
+  postgres_data:
+  mongo_data:
