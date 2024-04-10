@@ -32,7 +32,7 @@ RUN apk add --update --no-cache \
 WORKDIR /app
 
 # Install gems
-COPY ./Gemfile* /app/
+COPY Gemfile* /app/
 RUN bundle config frozen false \
  && bundle config "https://github.com/Vedoc/core-main.git" $GIT_CREDENTIALS \
  && bundle install -j4 --retry 3 \
