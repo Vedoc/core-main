@@ -73,6 +73,10 @@ COPY Gemfile Gemfile.lock ./
 # Install gems
 # RUN bundle install
 
+# Copy the startup script and grant executable permission
+COPY docker/startup.sh /docker/startup.sh
+RUN chmod +x /docker/startup.sh
+
 # Copy the rest of the application code
 COPY . .
 
