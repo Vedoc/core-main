@@ -48,6 +48,10 @@ RUN rm -rf $FOLDERS_TO_REMOVE
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY init.sql /docker-entrypoint-initdb.d/
 
+# Copy the startup script and grant executable permission
+COPY docker/startup.sh /docker/startup.sh
+RUN chmod +x /docker/startup.sh
+
 # Stage Final
 FROM ruby:3.3.0-alpine
 
@@ -72,10 +76,6 @@ COPY Gemfile Gemfile.lock ./
 
 # Install gems
 # RUN bundle install
-
-# Copy the startup script and grant executable permission
-COPY docker/startup.sh /docker/startup.sh
-RUN chmod +x /docker/startup.sh
 
 # Copy the rest of the application code
 COPY . .
