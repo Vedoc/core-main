@@ -38,13 +38,13 @@ services:
       - ./admin-panel:/app
     command: sh -c "./docker/startup.sh"
 
-  db:
-    image: postgres:latest
-    env_file: .env
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+  # db:
+  #   image: postgres:latest
+  #   env_file: .env
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
 
   mongo:
     image: mongo:latest
