@@ -87,7 +87,7 @@ services:
       start_period: 1m
 
   admin:
-    image: registry.github.com/Vedoc/admin-panel:latest
+    image: registry.github.com/vedoc/admin-panel:latest
     build:
       context: ../admin-panel
       args:
@@ -126,7 +126,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: password
 
   chat:
-    image: registry.github.com/Vedoc/vedoc-chat:latest
+    image: registry.github.com/vedoc/vedoc-chat:latest
     build: ../vedoc-chat
     restart: always
     environment:
