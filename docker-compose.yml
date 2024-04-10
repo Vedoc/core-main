@@ -3,7 +3,7 @@ version: '3.8'
 services:
   core_main:
     build:
-      context: ./core-main
+      context: .
       args:
         FOLDERS_TO_REMOVE: 'tmp log'
         BUNDLE_WITHOUT: 'development test'
