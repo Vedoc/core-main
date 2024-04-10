@@ -32,6 +32,8 @@ WORKDIR /app
 
 # Copy Gemfile and Gemfile.lock separately to leverage Docker layer caching
 COPY Gemfile Gemfile.lock ./
+
+# Install gems
 RUN bundle config frozen false \
  && bundle config "https://github.com/Vedoc/core-main.git" $GIT_CREDENTIALS \
  && bundle install -j4 --retry 3 \
