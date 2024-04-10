@@ -21,7 +21,7 @@ services:
 
   admin_panel:
     build:
-      context: ./admin-panel
+      context: ../admin-panel
       args:
         FOLDERS_TO_REMOVE: 'tmp log'
         BUNDLE_WITHOUT: 'development test'
