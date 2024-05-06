@@ -41,6 +41,9 @@ RUN bundle config frozen false \
  && find /usr/local/bundle/gems/ -name "*.c" -delete \
  && find /usr/local/bundle/gems/ -name "*.o" -delete
 
+# Set permissions for the tmp/cache directory
+RUN mkdir -p /app/tmp/cache && chmod -R 777 /app/tmp/cache
+
 # Remove folders not needed in resulting image
 ARG FOLDERS_TO_REMOVE
 RUN rm -rf $FOLDERS_TO_REMOVE
