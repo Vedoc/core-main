@@ -56,6 +56,9 @@ COPY init.sql /docker-entrypoint-initdb.d/
 COPY docker/startup.sh /docker/startup.sh
 RUN chmod +x /docker/startup.sh
 
+# Set correct file ownership
+RUN chown -R app:app /app
+
 # Stage Final
 FROM ruby:3.3.0-alpine
 
@@ -76,10 +79,10 @@ USER app
 WORKDIR /app
 
 # Copy installed gems from the builder stage
-COPY --from=Builder /usr/local/bundle /usr/local/bundle
+COPY --from=Builder --chown=app:app /usr/local/bundle /usr/local/bundle
 
 # Copy the rest of the application code
-COPY . .
+COPY --chown=app:app . .
 
 # Set Rails env
 ENV RAILS_LOG_TO_STDOUT true
