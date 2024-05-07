@@ -56,6 +56,9 @@ COPY init.sql /docker-entrypoint-initdb.d/
 COPY docker/startup.sh /docker/startup.sh
 RUN chmod +x /docker/startup.sh
 
+# Add user and group
+RUN addgroup -g 1000 -S app && adduser -u 1000 -S app -G app
+
 # Set correct file ownership
 RUN chown -R app:app /app
 
