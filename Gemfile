@@ -79,6 +79,8 @@ gem 'stripe'
 # Ruby bindings to Firebase Cloud Messaging
 gem 'fcm'
 
+gem 'sprockets-rails'
+
 # Manage settings with Ruby on Rails
 gem 'rails-settings-cached'
 
