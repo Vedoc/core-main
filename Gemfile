@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 git_source( :github ) { | repo | "https://github.com/#{ repo }.git" }
 
-ruby '3.3.0'
-# ruby '3.3.1'
+# ruby '3.3.0'
+ruby '3.3.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.3.2'
-# gem "rails", "~> 7.1.3", ">= 7.1.3.2"
+# gem 'rails', '~> 7.1.3.2'
+gem "rails", "~> 7.1.3", ">= 7.1.3.2"
 
 # Vedoc app models
 # gem 'vedoc-plugin', git: 'https://github.com/vedoc/vedoc-plugin.git', branch: 'main'
@@ -79,7 +79,7 @@ gem 'stripe'
 # Ruby bindings to Firebase Cloud Messaging
 gem 'fcm'
 
-gem 'sprockets-rails'
+# gem 'sprockets-rails'
 
 # Manage settings with Ruby on Rails
 gem 'rails-settings-cached'
