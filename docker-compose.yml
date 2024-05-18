@@ -25,7 +25,7 @@ services:
       - redis
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli","ping"]
+      test: ["CMD-SHELL", "redis-cli ping"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -67,6 +67,7 @@ services:
       - MONGO_DB=${MONGO_DB}
       - MONGO_HOST=${MONGO_HOST}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     ports:
       - '3000:3000'
     networks:
@@ -96,6 +97,7 @@ services:
         - RAILS_ENV=development
         - NODE_ENV=development
         - GIT_CREDENTIALS=user:password
+        - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}  # Add this line
     environment:
       - APP_HOST=${APP_HOST}
       - DB_HOST=${DB_HOST}
@@ -109,6 +111,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - SMTP_DOMAIN=${SMTP_DOMAIN}
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
+      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}  # Ensure this is here too
     ports:
       - '3001:3001'
     networks:
