@@ -2,6 +2,6 @@
   CarCategory.create(name: category)
 end
 
-AdminUser.find_or_create_by(email: 'admin@mail.com') do |admin|
-  admin.password = 'password' # Replace 'password' with the actual password
-end
+# AdminUser.find_or_create_by(email: 'admin@mail.com') do |admin|
+#   admin.password = 'password' # Replace 'password' with the actual password
+# end
