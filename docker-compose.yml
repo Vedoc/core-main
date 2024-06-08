@@ -88,9 +88,9 @@ services:
       start_period: 1m
 
   admin:
-    image: registry.github.com/vedoc/admin:latest
+    image: registry.github.com/vedoc/my_admin:latest
     build:
-      context: ../admin
+      context: ../my_admin
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
