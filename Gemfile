@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 git_source( :github ) { | repo | "https://github.com/#{ repo }.git" }
 
-ruby '3.3.0'
-# ruby '3.3.1'
+# ruby '3.3.0'
+ruby '3.3.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 7.1.3.2'
-# gem "rails", "~> 7.1.3", ">= 7.1.3.2"
+# gem 'rails', '~> 7.1.3.2'
+gem "rails", "~> 7.1.3", ">= 7.1.3.2"
 
 # Vedoc app models
 # gem 'vedoc-plugin', git: 'https://github.com/vedoc/vedoc-plugin.git', branch: 'main'
@@ -93,7 +93,7 @@ group :development, :test do
   # Ruby static code analyzer and code formatter
   gem 'rubocop', require: false
   # Testing framework
-  gem 'rspec-rails', '~> 3.8'
+  # gem 'rspec-rails', '~> 3.8'
   # Fixtures replacement
   gem 'factory_bot_rails'
   # Generate fake data
@@ -104,6 +104,7 @@ group :development, :test do
 
   # Allows to automatically & intelligently launch specs when files are modified
   gem 'guard-rspec', require: false
+  gem 'rspec-rails', '~> 6.1.0'
 end
 
 group :development do
@@ -111,13 +112,15 @@ group :development do
   gem 'listen', '~> 3.5'
   # Spring speeds up development by keeping your application running in the
   # background. Read more: https://github.com/rails/spring
-  gem 'spring'
+  gem 'spring', '~> 2.1'
+
   gem 'spring-watcher-listen', '~> 2.0.0'
   # An alternative to the standard IRB shell for Ruby.
   gem 'pry-rails'
   # Static analysis tool which checks Ruby on Rails applications
   # for security vulnerabilities
   gem 'brakeman', require: false
+  
 end
 
 group :test do
