@@ -29,6 +29,8 @@ module VedocApi
 
     config.middleware.use Rack::Attack unless Rails.env.test?
 
+    config.autoload_paths += %W(#{config.root}/lib)
+
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
