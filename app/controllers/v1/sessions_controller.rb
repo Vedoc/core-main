@@ -1,5 +1,7 @@
 module V1
   class SessionsController < DeviseTokenAuth::SessionsController
+    after_action :custom_render_destroy_success, only: :destroy
+
     def create
       super do
         create_or_update_device
@@ -7,20 +9,26 @@ module V1
     end
 
     def destroy
-      super do | account |
-        return unless params[ :device_id ]
-
-        account.devices.where(
-          device_id: params[ :device_id ], platform: params[ :platform ]
-        ).destroy_all
+      super do |account|
+        if params[:device_id]
+          account.devices.where(
+            device_id: params[:device_id], platform: params[:platform]
+          ).destroy_all
+        end
       end
+    end
+
+    private
+
+    def custom_render_destroy_success
+      render json: { success: true }, status: :ok if response.status == 204
     end
 
     def render_create_success; end
 
     def render_create_error_bad_credentials
       render_errors(
-        errors: [ I18n.t( 'devise_token_auth.sessions.bad_credentials' ) ],
+        errors: [I18n.t('devise_token_auth.sessions.bad_credentials')],
         status: :unauthorized
       )
     end
@@ -31,14 +39,14 @@ module V1
 
     def render_create_error_not_confirmed
       render_errors(
-        errors: [ I18n.t( 'devise_token_auth.sessions.not_confirmed' ) ],
+        errors: [I18n.t('devise_token_auth.sessions.not_confirmed')],
         status: :unauthorized
       )
     end
 
     def render_destroy_error
       render_errors(
-        errors: [ I18n.t( 'devise_token_auth.sessions.user_not_found' ) ],
+        errors: [I18n.t('devise_token_auth.sessions.user_not_found')],
         status: :not_found
       )
     end
