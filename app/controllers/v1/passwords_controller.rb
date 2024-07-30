@@ -13,7 +13,7 @@ module V1
 
     def render_create_error
       render_errors(
-        errors: [I18n.t('devise_token_auth.passwords.user_not_found', email: @email)],
+        errors: [I18n.t('devise_token_auth.passwords.user_not_found', email: @resource.email)],
         status: :not_found
       )
     end
