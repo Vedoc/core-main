@@ -1,5 +1,5 @@
 defaults: &defaults
-  password_reset_duration: 300
+  password_reset_duration: 3600
   promo_code_duration: 86400
   default_radius: 32186.9
   service_request_fee: 125

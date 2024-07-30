@@ -41,5 +41,9 @@ module VedocApi
     config.action_controller.action_on_unpermitted_parameters = :log
 
     config.active_job.queue_adapter = :sidekiq
+
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore
+    config.middleware.use ActionDispatch::Flash
   end
 end
