@@ -122,7 +122,8 @@ module V1
         address: client.address,
         vehicles: client.vehicles,
         avatar: client.avatar,
-        location: client.location
+        location: client.location,
+        card_token: ""
       }
     end
 
