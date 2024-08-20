@@ -121,7 +121,7 @@ module V1
         phone: client.phone,
         address: client.address,
         vehicles: client.vehicles,
-        avatar: client.avatar,
+        avatar: client.avatar_url,
         location: client.location,
         card_token: ""
       }
@@ -143,7 +143,7 @@ module V1
         complimentary_inspection: shop.complimentary_inspection,
         vehicle_warranties: shop.vehicle_warranties,
         vehicle_electric: shop.vehicle_electric,
-        avatar: shop.avatar,
+        avatar: shop.avatar_url,
         additional_info: shop.additional_info,
         categories: shop.categories,
         languages: shop.languages,
