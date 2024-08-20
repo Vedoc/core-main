@@ -1,6 +1,9 @@
 module V1
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
     def create
+
+      params.permit(:email, :password, :promo_code, :card_token, device: [:platform, :device_id, :device_token], client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
+      
       super do |resource|
         if resource.persisted?
           @promo_code&.update activated_at: Time.now.utc
