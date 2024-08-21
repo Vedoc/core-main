@@ -1,10 +1,11 @@
 object false
 
-child locals[ :accountable ] => :client do
+child locals[:accountable] => :client do
   attributes :name, :phone, :address
 
-  node( :avatar ) { | c | c.avatar.url }
-  node( :location, &:pretty_location )
+  # Handle avatar being nil
+  node(:avatar) { |c| c.avatar.present? ? c.avatar.url : "" }
+  node(:location, &:pretty_location)
 
   child :vehicles do
     collection @vehicles, object_root: false

@@ -1,12 +1,14 @@
 module V1
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
     def create
+      # Permit all necessary parameters
+      params.permit(:email, :password, :promo_code, :card_token, 
+                    device: [:platform, :device_id, :device_token], 
+                    client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
 
-      params.permit(:email, :password, :promo_code, :card_token, device: [:platform, :device_id, :device_token], client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
-      
       super do |resource|
         if resource.persisted?
-          @promo_code&.update activated_at: Time.now.utc
+          @promo_code&.update(activated_at: Time.now.utc)
           create_or_update_device
           token_data = resource.create_new_auth_token
           response.headers.merge!(token_data)
