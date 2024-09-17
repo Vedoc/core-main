@@ -3,28 +3,91 @@ module V1
     after_action :custom_render_destroy_success, only: :destroy
 
     def create
-      super do
-        create_or_update_device
-      end
-    end
+      super do |resource|
+        if resource && resource.persisted?
+          create_or_update_device
+    
+          token_data = resource.create_new_auth_token
+          response.headers.merge!(token_data)
 
-    def destroy
-      super do |account|
-        if params[:device_id]
-          account.devices.where(
-            device_id: params[:device_id], platform: params[:platform]
-          ).destroy_all
+          # Render the custom JSON response
+          render json: {
+            auth: {
+              'access-token': token_data['access-token'],
+              client: token_data['client'],
+              'token-type': token_data['token-type'],
+              uid: token_data['uid']
+            },
+            account: resource_data(resource),
+            status: 'success'
+          }
+          # Use `return` to prevent further execution after rendering
+          return
         end
       end
     end
 
     private
 
+    def resource_data(resource)
+      if resource.is_a?(Account)
+        {
+          email: resource.email,
+          employee: resource.employee,
+          client: resource.client? ? client_data(resource.accountable) : nil,
+          business_owner: resource.business_owner? ? shop_data(resource.accountable) : nil
+        }
+      else
+        # Handle cases where resource is not an Account
+        {
+          email: nil,
+          employee: false,
+          client: nil,
+          business_owner: nil
+        }
+      end
+    end
+
+    def client_data(client)
+      {
+        name: client.name,
+        phone: client.phone,
+        address: client.address,
+        vehicles: client.vehicles,
+        avatar: client.avatar_url,
+        location: client.location,
+        card_token: client.card_token || ""
+      }
+    end
+
+    def shop_data(shop)
+      {
+        name: shop.name,
+        phone: shop.phone,
+        address: shop.address,
+        hours_of_operation: shop.hours_of_operation,
+        techs_per_shift: shop.techs_per_shift,
+        vehicle_diesel: shop.vehicle_diesel,
+        certified: shop.certified,
+        lounge_area: shop.lounge_area,
+        supervisor_permanently: shop.supervisor_permanently,
+        tow_track: shop.tow_track,
+        owner_name: shop.owner_name,
+        complimentary_inspection: shop.complimentary_inspection,
+        vehicle_warranties: shop.vehicle_warranties,
+        vehicle_electric: shop.vehicle_electric,
+        avatar: shop.avatar_url,
+        additional_info: shop.additional_info,
+        categories: shop.categories,
+        languages: shop.languages,
+        pictures_attributes: shop.pictures_attributes,
+        location: shop.location
+      }
+    end
+
     def custom_render_destroy_success
       render json: { success: true }, status: :ok if response.status == 204
     end
-
-    def render_create_success; end
 
     def render_create_error_bad_credentials
       render_errors(

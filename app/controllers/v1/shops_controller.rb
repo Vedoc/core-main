@@ -5,11 +5,20 @@ module V1
     before_action :set_current_account
     before_action :set_shop, only: :show
 
+    # def index
+    #   @shops = Shop.approved.within_distance(
+    #     OpenStruct.new( lat: params[ :lat ], lon: params[ :long ] )
+    #   ).by_rating.where( 'LOWER(name) LIKE LOWER(?)', "%#{ params[ :name ] }%" )
+    # end
+
     def index
-      @shops = Shop.approved.within_distance(
-        OpenStruct.new( lat: params[ :lat ], lon: params[ :long ] )
-      ).by_rating.where( 'LOWER(name) LIKE LOWER(?)', "%#{ params[ :name ] }%" )
+      radius = Setting.default_radius(10) # Use 10 as the fallback default radius
+      @shops = Shop.approved.within_distance(OpenStruct.new(lat: params[:lat], lon: params[:long]), radius)
+                          .by_rating
+                          .where('LOWER(name) LIKE LOWER(?)', "%#{params[:name]}%")
+      render json: @shops
     end
+    
 
     def show; end
 
