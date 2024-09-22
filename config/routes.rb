@@ -11,6 +11,8 @@ Rails.application.routes.draw do
       resources :password_resets, only: :create
     end
 
+    delete 'auth', to: 'registrations#destroy'
+
     resources :promo_codes, only: :create
     resources :vehicles, only: %i[index create update destroy]
     resources :service_requests, only: %i[index create show destroy] do

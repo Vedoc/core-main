@@ -41,6 +41,27 @@ module V1
       super
     end
 
+    def destroy
+      # Check if email and password are provided
+      unless params[:email].present? && params[:password].present?
+        return render json: { errors: ['Email and password are required'] }, status: :unprocessable_entity
+      end
+
+      # Find the user by email
+      user = Account.find_by(email: params[:email])
+
+      if user && user.valid_password?(params[:password])
+        # Destroy the user's account
+        if user.destroy
+          render json: { message: 'Account successfully deleted' }, status: :ok
+        else
+          render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
+        end
+      else
+        render json: { errors: ['Invalid email or password'] }, status: :unauthorized
+      end
+    end
+
     protected
 
     def build_resource
