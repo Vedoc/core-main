@@ -32,26 +32,26 @@ services:
     volumes:
       - redis-data:/data
 
-  puma:
-    image: registry.github.com/vedoc/core-main:latest
-    build:
-      context: .
-    command: bundle exec puma -C config/puma.rb
-    environment:
-      - RAILS_ENV=production
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-    ports:
-      - "3003:3003"
-    volumes:
-      - .:/home/ubuntu/core-main
-    networks:
-      - database
-      - redis
-      - mongo
-    restart: always
+  # puma:
+  #   image: registry.github.com/vedoc/core-main:latest
+  #   build:
+  #     context: .
+  #   command: bundle exec puma -C config/puma.rb
+  #   environment:
+  #     - RAILS_ENV=production
+  #     - DB_HOST=${DB_HOST}
+  #     - DB_NAME=${DB_NAME}
+  #     - DB_USER=${DB_USER}
+  #     - DB_PASSWORD=${DB_PASSWORD}
+  #   ports:
+  #     - "3003:3003"
+  #   volumes:
+  #     - .:/home/ubuntu/core-main
+  #   networks:
+  #     - database
+  #     - redis
+  #     - mongo
+  #   restart: always
 
   app: &app_base
     image: registry.github.com/vedoc/core-main:latest

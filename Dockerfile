@@ -72,8 +72,6 @@ RUN apk add --update --no-cache \
     tzdata \
     file \
     git
-   
-    RUN mkdir -p /home/ubuntu/core-main/tmp/sockets && chmod 777 /home/ubuntu/core-main/tmp/sockets
 
 # Add user
 RUN addgroup -g 1000 -S app \
