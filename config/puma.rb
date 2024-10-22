@@ -2,6 +2,10 @@
 threads_count = ENV.fetch('RAILS_MAX_THREADS') { 5 }
 threads threads_count, threads_count
 
+log_requests true
+
+stdout_redirect '/home/ubuntu/core-main/log/puma.stdout.log', '/home/ubuntu/core-main/log/puma.stderr.log', true
+
 # Bind to a Unix socket instead of a TCP port
 bind "unix:///home/ubuntu/core-main/tmp/sockets/puma.sock"
 
