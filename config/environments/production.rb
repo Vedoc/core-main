@@ -55,7 +55,9 @@ Rails.application.configure do
   config.log_tags = [ :request_id ]
 
   # config.hosts << ENV['APP_HOST']
-  config.hosts << "100-25-145-224.nip.io"
+  # config.hosts << "100-25-145-224.nip.io"
+  config.hosts.clear
+
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
