@@ -72,6 +72,8 @@ RUN apk add --update --no-cache \
     tzdata \
     file \
     git
+   
+    RUN mkdir -p /home/ubuntu/core-main/tmp/sockets && chmod 777 /home/ubuntu/core-main/tmp/sockets
 
 # Add user
 RUN addgroup -g 1000 -S app \
@@ -80,10 +82,6 @@ USER app
 
 # Set working directory
 WORKDIR /app
-
-# Create the socket directory for Puma
-# RUN mkdir -p /home/ubuntu/core-main/tmp/sockets && chmod 777 /home/ubuntu/core-main/tmp/sockets
-RUN mkdir -p /app/tmp/sockets && chmod 777 /app/tmp/sockets
 
 # Copy installed gems from the builder stage
 COPY --from=Builder --chown=app:app /usr/local/bundle /usr/local/bundle
