@@ -39,8 +39,8 @@ services:
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
-        - RAILS_ENV=development
-        - NODE_ENV=development
+        - RAILS_ENV=production
+        - NODE_ENV=production
         - GIT_CREDENTIALS=user:password
     environment:
       - APP_HOST=${APP_HOST}
@@ -94,8 +94,8 @@ services:
       args:
         - ADDITIONAL_PACKAGES=nodejs-current
         - EXECJS_RUNTIME=Node
-        - RAILS_ENV=development
-        - NODE_ENV=development
+        - RAILS_ENV=production
+        - NODE_ENV=production
         - GIT_CREDENTIALS=user:password
         - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     environment:
