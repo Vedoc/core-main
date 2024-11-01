@@ -45,7 +45,7 @@ Rails.application.configure do
   # config.action_cable.allowed_request_origins = [ 'http://example.com', /http:\/\/example.*/ ]
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
@@ -53,6 +53,9 @@ Rails.application.configure do
 
   # Prepend all log lines with the following tags.
   config.log_tags = [ :request_id ]
+
+  # config.hosts << ENV['APP_HOST']
+  config.hosts.clear
 
   # Use a different cache store in production.
   # config.cache_store = :mem_cache_store
@@ -68,6 +71,11 @@ Rails.application.configure do
   config.action_mailer.perform_deliveries = true
 
   config.action_mailer.delivery_method = :smtp
+
+  config.action_mailer.default_url_options = {
+    host : ENV[ 'APP_HOST' ],
+    protocol : 'https'
+  }
 
   config.action_mailer.smtp_settings = {
     user_name: ENV[ 'MAIL_USERNAME' ],
