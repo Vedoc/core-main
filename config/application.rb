@@ -45,5 +45,8 @@ module VedocApi
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore
     config.middleware.use ActionDispatch::Flash
+
+    Rails.application.config.hosts.clear
+    config.action_dispatch.show_exceptions = true
   end
 end
