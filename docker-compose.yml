@@ -7,14 +7,13 @@ services:
       POSTGRES_DB: "${DB_NAME}"
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASSWORD}"
-      POSTGRES_HOST: "${DB_HOST}"
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
       - database
     restart: always
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -h ${DB_HOST}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 30s
       timeout: 30s
       retries: 3
@@ -44,7 +43,7 @@ services:
         - GIT_CREDENTIALS=user:password
     environment:
       - APP_HOST=${APP_HOST}
-      - DB_HOST=${DB_HOST}
+      - DB_HOST=db
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -76,6 +75,11 @@ services:
       - redis
       - mongo
     restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
 
   worker:
     <<: *app_base
@@ -100,7 +104,7 @@ services:
         - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     environment:
       - APP_HOST=${APP_HOST}
-      - DB_HOST=${DB_HOST}
+      - DB_HOST=db
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -113,9 +117,12 @@ services:
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     ports:
-      - '3001:3001'
+      - '3005:3005'
     networks:
       - database
+    depends_on:
+      db:
+        condition: service_healthy
 
   mongo:
     image: mongo:4
@@ -144,6 +151,8 @@ services:
       - mongo
     ports:
       - 8080:8080
+    depends_on:
+      - mongo
 
 volumes:
   db-data:
