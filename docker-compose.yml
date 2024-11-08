@@ -117,7 +117,7 @@ services:
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
     ports:
-      - '3005:3005'
+      - '3001:3001'
     networks:
       - database
     depends_on:
