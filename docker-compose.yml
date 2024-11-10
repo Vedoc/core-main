@@ -101,7 +101,7 @@ services:
         - RAILS_ENV=production
         - NODE_ENV=production
         - GIT_CREDENTIALS=user:password
-        - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+        - RAILS_MASTER_KEY=${ADMIN_RAILS_MASTER_KEY}
     environment:
       - APP_HOST=${APP_HOST}
       - DB_HOST=db
@@ -115,7 +115,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - SMTP_DOMAIN=${SMTP_DOMAIN}
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
-      - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - RAILS_MASTER_KEY=${ADMIN_RAILS_MASTER_KEY} 
     ports:
       - '3001:3001'
     networks:
