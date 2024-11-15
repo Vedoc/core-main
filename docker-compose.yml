@@ -116,6 +116,8 @@ services:
       - SMTP_DOMAIN=${SMTP_DOMAIN}
       - FIREBASE_SERVER_KEY=${FIREBASE_SERVER_KEY}
       - RAILS_MASTER_KEY=${ADMIN_RAILS_MASTER_KEY} 
+    volumes:
+      - ../my_admin/public:/app/public  
     ports:
       - '3001:3001'
     networks:
