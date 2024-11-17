@@ -1,3 +1,5 @@
+require 'csv'
+
 namespace :db do
   namespace :seed do
     task vehicles: :environment do
