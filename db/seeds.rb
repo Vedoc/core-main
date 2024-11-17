@@ -6,9 +6,9 @@ end
 #   admin.password = 'password'
 # end
 
-AdminUser.find_or_create_by( email: ENV[ 'ADMIN_EMAIL' ] ) do | admin |
-  admin.password = ENV[ 'ADMIN_PASSWORD' ]
-end
+# AdminUser.find_or_create_by( email: ENV[ 'ADMIN_EMAIL' ] ) do | admin |
+#   admin.password = ENV[ 'ADMIN_PASSWORD' ]
+# end
 
 # Setting.create(var: 'password_reset_duration', value: '3600')
 
@@ -16,5 +16,5 @@ end
 #   setting.value = '3600'
 # end
 # db/seeds.rb
-Setting.create(var: 'password_reset_duration', value: '24')
+# Setting.create(var: 'password_reset_duration', value: '24')
 
