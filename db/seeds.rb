@@ -1,6 +1,10 @@
+# Seed default CarCategories
 %w[car truck].each do |category|
-  CarCategory.create(name: category)
+  CarCategory.find_or_create_by!(name: category)
 end
+
+puts "Default CarCategories seeded successfully."
+
 
 # AdminUser.find_or_create_by(email: 'admin@mail.com') do |admin|
 #   admin.password = 'password'
