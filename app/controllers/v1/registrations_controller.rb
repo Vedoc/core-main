@@ -1,31 +1,35 @@
 module V1
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
     def create
-      # Permit all necessary parameters
-      params.permit(:email, :password, :promo_code, :card_token, 
-                    device: [:platform, :device_id, :device_token], 
-                    client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
+      begin
+        permitted_params = params.permit(:email, :password, :promo_code, :card_token, 
+                                       device: [:platform, :device_id, :device_token], 
+                                       client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
 
-      super do |resource|
-        if resource.persisted?
-          @promo_code&.update(activated_at: Time.now.utc)
-          create_or_update_device
-          token_data = resource.create_new_auth_token
-          response.headers.merge!(token_data)
+        super do |resource|
+          if resource.persisted?
+            @promo_code&.update(activated_at: Time.now.utc)
+            create_or_update_device
+            token_data = resource.create_new_auth_token
+            response.headers.merge!(token_data)
 
-          render json: {
-            auth: {
-              'access-token': token_data['access-token'],
-              client: token_data['client'],
-              'token-type': token_data['token-type'],
-              uid: token_data['uid']
-            },
-            account: resource_data(resource),
-            status: 'success'
-          }
-        else
-          render_create_error
+            render json: {
+              auth: {
+                'access-token': token_data['access-token'],
+                client: token_data['client'],
+                'token-type': token_data['token-type'],
+                uid: token_data['uid']
+              },
+              account: resource_data(resource),
+              status: 'success'
+            }
+          else
+            render_create_error
+          end
         end
+      rescue StandardError => e
+        Rails.logger.error("Registration error: #{e.message}")
+        render_errors(errors: ['Registration failed. Please try again.'], status: :unprocessable_entity)
       end
     end
 
@@ -133,11 +137,13 @@ module V1
     private
 
     def resource_data(resource)
+      return {} unless resource&.is_a?(Account)
+
       {
         email: resource.email,
         employee: resource.employee,
-        client: resource.accountable_type == 'Client' ? client_data(resource.accountable) : nil,
-        business_owner: resource.accountable_type == 'Shop' ? shop_data(resource.accountable) : nil
+        client: resource.client? ? client_data(resource.accountable) : nil,
+        business_owner: resource.business_owner? ? shop_data(resource.accountable) : nil
       }
     end
 
