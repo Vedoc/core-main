@@ -2,14 +2,13 @@ module V1
   class RegistrationsController < DeviseTokenAuth::RegistrationsController
     def create
       begin
-        permitted_params = params.permit(:email, :password, :promo_code, :card_token, 
-                                       device: [:platform, :device_id, :device_token], 
-                                       client: [:name, :phone, :avatar, :address, location: [:lat, :long]])
+        @promo_code_token = params.delete(:promo_code)
+        @card_token = params.delete(:card_token)
 
         super do |resource|
           if resource.persisted?
             @promo_code&.update(activated_at: Time.now.utc)
-            create_or_update_device
+            create_or_update_device(device_params)
             token_data = resource.create_new_auth_token
             response.headers.merge!(token_data)
 
@@ -71,19 +70,18 @@ module V1
     def build_resource
       super
 
-      if params[:promo_code].present?
-        @promo_code = PromoCode.with_code_token(params[:promo_code])
+      if @promo_code_token.present?
+        @promo_code = PromoCode.with_code_token(@promo_code_token)
 
         return if @promo_code.blank? || @promo_code.expired?
 
         @resource.employee = true
-
-        return @resource.accountable = @promo_code.shop
+        @resource.accountable = @promo_code.shop
+      elsif params[:shop].present?
+        @resource.accountable = Shop.new(shop_params)
+      elsif params[:client].present?
+        @resource.accountable = Client.new(client_params)
       end
-
-      return @resource.accountable = Shop.new(shop_params) if params[:shop].present?
-
-      @resource.accountable = Client.new(client_params)
     end
 
     def validate_account_update_params; end
@@ -106,13 +104,13 @@ module V1
     end
 
     def client_params
-      return if params[:client].blank?
+      return {} if params[:client].blank?
 
       params.require(:client).permit(:name, :phone, :avatar, :address, location: %i[lat long])
     end
 
     def shop_params
-      return if params[:shop].blank?
+      return {} if params[:shop].blank?
 
       params.require(:shop).permit(
         :name, :hours_of_operation, :techs_per_shift, :phone, :address, :vehicle_diesel,
@@ -155,7 +153,7 @@ module V1
         vehicles: client.vehicles,
         avatar: client.avatar_url,
         location: client.location,
-        card_token: ""
+        card_token: @card_token || ""
       }
     end
 
