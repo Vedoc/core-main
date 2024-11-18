@@ -22,39 +22,32 @@ class ApplicationController < ActionController::API
   end
 
   def configure_permitted_parameters
-    device_params = %i[device_id device_token platform]
-    client_params = %i[name phone avatar address]
-    location_params = %i[lat long]
-
     devise_parameter_sanitizer.permit(
-      :sign_up, keys: [
+      :sign_up,
+      keys: [
         :email,
         :password,
         :zip_code,
-        :phone,
-        :promo_code,
-        :card_token,
-        { client: client_params + [{ location: location_params }] },
-        { device: device_params }
+        :phone
       ]
     )
 
     devise_parameter_sanitizer.permit(
-      :sign_in, keys: [
+      :sign_in,
+      keys: [
         :email,
-        :password,
-        { device: device_params }
+        :password
       ]
     )
   end
 
   def device_params
-    return if params[ :device ].blank?
+    return {} if params[:device].blank?
 
-    params.require( :device ).permit :device_id, :device_token, :platform
+    params.require(:device).permit(:device_id, :device_token, :platform)
   end
 
-  def create_or_update_device
+  def create_or_update_device(device_params)
     return if device_params.blank?
 
     Account.transaction do
