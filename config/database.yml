@@ -1,19 +1,27 @@
 default: &default
   adapter: postgis
   encoding: unicode
-  username: <%= ENV['DB_USER'] %>
-  password: <%= ENV['DB_PASSWORD'] %>
-  database: <%= ENV['DB_NAME'] %>
-  host: <%= ENV['DB_HOST'].split(':')[0] %>
-  port: <%= ENV['DB_HOST'].split(':')[1] if ENV['DB_HOST'].include?(':') %>
-  pool: <%= ENV.fetch('RAILS_MAX_THREADS') { 5 } %>
+
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
 
 development:
   <<: *default
+  database: admin_repo_development
+
+  username: postgres
+
+  password: 12345
+
+  host: localhost
+
+  port: 5432
 
 test:
   <<: *default
-  database: vedoc-api_test
+  database: admin_repo_test
 
 production:
   <<: *default
+  database: admin_repo_production
+  username: admin_repo
+  password: <%= ENV["admin_repo_DATABASE_PASSWORD"] %>
