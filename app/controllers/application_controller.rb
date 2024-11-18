@@ -23,16 +23,27 @@ class ApplicationController < ActionController::API
 
   def configure_permitted_parameters
     device_params = %i[device_id device_token platform]
+    client_params = %i[name phone avatar address]
+    location_params = %i[lat long]
 
     devise_parameter_sanitizer.permit(
-      :sign_up, keys: %i[
-        email password zip_code phone
+      :sign_up, keys: [
+        :email,
+        :password,
+        :zip_code,
+        :phone,
+        :promo_code,
+        :card_token,
+        { client: client_params + [{ location: location_params }] },
+        { device: device_params }
       ]
     )
 
     devise_parameter_sanitizer.permit(
       :sign_in, keys: [
-        :email, :password, device: device_params
+        :email,
+        :password,
+        { device: device_params }
       ]
     )
   end
@@ -46,15 +57,19 @@ class ApplicationController < ActionController::API
   def create_or_update_device
     return if device_params.blank?
 
-    @device = Device.find_by(
-      platform: device_params[ :platform ],
-      device_id: device_params[ :device_id ],
-      account_id: @resource.id
-    )
+    Account.transaction do
+      @device = Device.find_or_initialize_by(
+        platform: device_params[:platform],
+        device_id: device_params[:device_id],
+        account_id: @resource.id
+      )
 
-    return @device = Device.create( device_params.merge( account_id: @resource.id ) ) unless @device
-
-    @device.update device_params
+      @device.assign_attributes(device_params)
+      @device.save!
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.error("Device creation failed: #{e.message}")
+    false
   end
 
   private
