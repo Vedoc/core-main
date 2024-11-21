@@ -10,14 +10,14 @@ class ApplicationController < ActionController::API
   alias current_account current_v1_account
 
   def render_authenticate_error
-    render_errors errors: [ I18n.t( 'devise.failure.unauthenticated' ) ], status: :unauthorized
+    render_errors errors: [I18n.t('devise.failure.unauthenticated')], status: :unauthorized
   end
 
   def pundit_user
     current_account
   end
 
-  def render_errors( errors: [], status: :unprocessable_entity )
+  def render_errors(errors: [], status: :unprocessable_entity)
     render 'v1/shared/errors', locals: { errors: errors }, status: status
   end
 
@@ -28,7 +28,11 @@ class ApplicationController < ActionController::API
         :email,
         :password,
         :zip_code,
-        :phone
+        :phone,
+        { client: [:name, :phone, :avatar, :address, location: %i[lat long]] },
+        { device: [:device_id, :device_token, :platform] },
+        :promo_code,
+        :card_token
       ]
     )
 
@@ -68,6 +72,6 @@ class ApplicationController < ActionController::API
   private
 
   def account_not_authorized
-    render_errors errors: [ I18n.t( 'pundit.errors.unauthorized' ) ], status: :forbidden
+    render_errors errors: [I18n.t('pundit.errors.unauthorized')], status: :forbidden
   end
 end
