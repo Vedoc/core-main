@@ -5,26 +5,23 @@ module V1
         @promo_code_token = params.delete(:promo_code)
         @card_token = params.delete(:card_token)
 
-        super do |resource|
-          if resource.persisted?
-            @promo_code&.update(activated_at: Time.now.utc)
-            create_or_update_device(device_params)
-            token_data = resource.create_new_auth_token
-            response.headers.merge!(token_data)
+        # Build the resource with parameters
+        build_resource
 
-            render json: {
-              auth: {
-                'access-token': token_data['access-token'],
-                client: token_data['client'],
-                'token-type': token_data['token-type'],
-                uid: token_data['uid']
-              },
-              account: resource_data(resource),
-              status: 'success'
-            }
-          else
-            render_create_error
-          end
+        if @resource.save
+          handle_promo_code_activation
+          create_or_update_device(device_params)
+
+          token_data = @resource.create_new_auth_token
+          response.headers.merge!(token_data)
+
+          render json: {
+            auth: auth_data(token_data),
+            account: resource_data(@resource),
+            status: 'success'
+          }, status: :created
+        else
+          render_errors(errors: @resource.errors.full_messages, status: :unprocessable_entity)
         end
       rescue StandardError => e
         Rails.logger.error("Registration error: #{e.message}")
@@ -32,86 +29,37 @@ module V1
       end
     end
 
-    def update
-      if @resource
-        authorize @resource
-
-        accountable_params = @resource.business_owner? ? shop_params : client_params
-
-        @resource.accountable.assign_attributes accountable_params.to_h
-      end
-
-      super
-    end
-
-    def destroy
-      # Check if email and password are provided
-      unless params[:email].present? && params[:password].present?
-        return render json: { errors: ['Email and password are required'] }, status: :unprocessable_entity
-      end
-
-      # Find the user by email
-      user = Account.find_by(email: params[:email])
-
-      if user && user.valid_password?(params[:password])
-        # Destroy the user's account
-        if user.destroy
-          render json: { message: 'Account successfully deleted' }, status: :ok
-        else
-          render json: { errors: user.errors.full_messages }, status: :unprocessable_entity
-        end
-      else
-        render json: { errors: ['Invalid email or password'] }, status: :unauthorized
-      end
-    end
-
     protected
 
     def build_resource
-      super
+      @resource = Account.new(account_params)
+      assign_accountable_resource
+    end
 
+    def assign_accountable_resource
       if @promo_code_token.present?
         @promo_code = PromoCode.with_code_token(@promo_code_token)
 
-        return if @promo_code.blank? || @promo_code.expired?
-
-        @resource.employee = true
-        @resource.accountable = @promo_code.shop
-      elsif params[:shop].present?
-        @resource.accountable = Shop.new(shop_params)
+        if @promo_code&.valid?
+          @resource.employee = true
+          @resource.accountable = @promo_code.shop
+        end
       elsif params[:client].present?
         @resource.accountable = Client.new(client_params)
+      elsif params[:shop].present?
+        @resource.accountable = Shop.new(shop_params)
       end
     end
 
-    def validate_account_update_params; end
-
-    def render_update_error_user_not_found
-      render_authenticate_error
-    end
-
-    def render_create_success; end
-
-    def render_update_success; end
-
-    def render_create_error
-      set_promo_code_errors
-      render :error, status: :unprocessable_entity
-    end
-
-    def render_update_error
-      render_create_error
+    def account_params
+      params.permit(:email, :password)
     end
 
     def client_params
-      return {} if params[:client].blank?
-
       params.require(:client).permit(:name, :phone, :avatar, :address, location: %i[lat long])
     end
 
     def shop_params
-      return {} if params[:shop].blank?
-
       params.require(:shop).permit(
         :name, :hours_of_operation, :techs_per_shift, :phone, :address, :vehicle_diesel,
         :certified, :lounge_area, :supervisor_permanently, :tow_track, :owner_name,
@@ -120,23 +68,27 @@ module V1
       )
     end
 
-    def set_promo_code_errors
-      return if params[:promo_code].blank?
-
-      @resource.errors.delete :accountable
-
-      if @promo_code.blank?
-        @resource.errors.add :promo_code, 'not found'
-      elsif @promo_code.expired?
-        @resource.errors.add :promo_code, 'has expired'
-      end
-    end
-
     private
 
-    def resource_data(resource)
-      return {} unless resource&.is_a?(Account)
+    def handle_promo_code_activation
+      return unless @promo_code_token.present?
 
+      @promo_code = PromoCode.with_code_token(@promo_code_token)
+      return unless @promo_code&.valid?
+
+      @promo_code.update(activated_at: Time.now.utc)
+    end
+
+    def auth_data(token_data)
+      {
+        'access-token': token_data['access-token'],
+        client: token_data['client'],
+        'token-type': token_data['token-type'],
+        uid: token_data['uid']
+      }
+    end
+
+    def resource_data(resource)
       {
         email: resource.email,
         employee: resource.employee,
@@ -177,7 +129,6 @@ module V1
         additional_info: shop.additional_info,
         categories: shop.categories,
         languages: shop.languages,
-        pictures_attributes: shop.pictures_attributes,
         location: shop.location
       }
     end
