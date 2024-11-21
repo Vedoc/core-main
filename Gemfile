@@ -19,7 +19,7 @@ gem 'pg', '>= 0.18', '< 2.0'
 gem 'activerecord-postgis-adapter'
 
 # Ruby ODM framework for MongoDB
-gem 'mongoid', '>= 7.0.0'
+# gem 'mongoid', '>= 7.0.0'
 
 # Use Puma as the app server
 # gem 'puma', '~> 3.11'
