@@ -3,14 +3,24 @@ module V1
     after_action :custom_render_destroy_success, only: :destroy
 
     def create
+      Rails.logger.debug("Attempting login for email: #{params[:email]}")
+    
       super do |resource|
         if resource && resource.persisted?
-          create_or_update_device
+          Rails.logger.debug("Resource persisted for email: #{resource.email}")
+    
+          device_params = params.dig(:device) || {}
+          if create_or_update_device(device_params)
+            Rails.logger.debug("Device successfully updated for resource ##{resource.id}")
+          else
+            Rails.logger.error("Device update failed for resource ##{resource.id}")
+          end
     
           token_data = resource.create_new_auth_token
+          Rails.logger.debug("Token data created: #{token_data}")
+    
           response.headers.merge!(token_data)
-
-          # Render the custom JSON response
+    
           render json: {
             auth: {
               'access-token': token_data['access-token'],
@@ -21,11 +31,14 @@ module V1
             account: resource_data(resource),
             status: 'success'
           }
-          # Use `return` to prevent further execution after rendering
           return
+        else
+          Rails.logger.error("Login failed for email: #{params[:email]}")
         end
       end
     end
+    
+    
 
     private
 
