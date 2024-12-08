@@ -57,6 +57,7 @@ class ApplicationController < ActionController::API
 
   # Ensures the device record is created or updated for the account
   def create_or_update_device(device_params)
+    device_params = device_params()
     return if device_params.blank?
 
     Account.transaction do
