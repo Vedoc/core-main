@@ -36,8 +36,13 @@ Rails.application.routes.draw do
   end
 
   namespace :v1 do
-    resources :promotions, only: [:create, :index]
+    resources :promotions, only: [:create, :index] do
+      collection do
+        get :options
+      end
+    end
   end
+  
   
 
   namespace :internal do

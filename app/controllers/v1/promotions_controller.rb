@@ -15,6 +15,10 @@ module V1
         render json: promotions, status: :ok
       end
   
+      def options
+        render json: { car_needs: Promotion::VALID_CAR_NEEDS }, status: :ok
+      end
+  
       private
   
       def promotion_params
