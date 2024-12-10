@@ -35,6 +35,11 @@ Rails.application.routes.draw do
     resource :profile, only: :show
   end
 
+  namespace :v1 do
+    resources :promotions, only: [:create, :index]
+  end
+  
+
   namespace :internal do
     resource :recepient, only: :show
     scope :notifications do
