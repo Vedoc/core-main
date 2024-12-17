@@ -76,6 +76,8 @@ gem 'pundit'
 # Ruby library for the Stripe API.
 gem 'stripe'
 
+gem 'rack-cors'
+
 # Ruby bindings to Firebase Cloud Messaging
 gem 'fcm'
 
