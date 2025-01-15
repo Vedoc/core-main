@@ -29,6 +29,30 @@ module V1
       end
     end
 
+    def destroy
+      # Check if we're using password-based deletion
+      if params[:password].present?
+        # Find account by email
+        @resource = Account.find_by(email: params[:email])
+        
+        if @resource && @resource.valid_password?(params[:password])
+          if @resource.destroy
+            render json: { status: 'success' }
+          else
+            render_errors(errors: @resource.errors.full_messages)
+          end
+        else
+          render_errors(
+            errors: ['Invalid email or password'],
+            status: :unauthorized
+          )
+        end
+      else
+        # Fall back to token-based deletion (original DeviseTokenAuth behavior)
+        super
+      end
+    end
+
     protected
 
     def build_resource
