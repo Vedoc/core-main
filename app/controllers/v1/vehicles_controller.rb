@@ -5,13 +5,17 @@ module V1
     before_action :set_vehicle, only: %i[update destroy]
 
     def index
-      @vehicles = current_account.vehicles
+      @vehicles = current_account.vehicles.with_client.ordered
     end
 
     def create
-      @vehicle = current_account.vehicles.build vehicle_params
-
-      render( :error, status: :unprocessable_entity ) unless @vehicle.save
+      @vehicle = current_account.vehicles.build(vehicle_params)
+      
+      if @vehicle.save
+        render :create
+      else
+        render :error, status: :unprocessable_entity
+      end
     end
 
     def update
@@ -33,7 +37,15 @@ module V1
     end
 
     def vehicle_params
-      params.require( :vehicle ).permit :make, :model, :year, :category, :photo, :photo
+      params.require(:vehicle).permit(
+        :make, 
+        :model, 
+        :year, 
+        :category, 
+        :photo
+      ).tap do |whitelisted|
+        whitelisted[:client_id] = current_account.accountable.id if current_account.client?
+      end
     end
 
     def set_vehicle
