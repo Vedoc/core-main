@@ -66,7 +66,14 @@ module V1
         name: client.name,
         phone: client.phone,
         address: client.address,
-        vehicles: client.vehicles,
+        vehicles: client.vehicles.map { |v| {
+          id: v.id,
+          make: v.make,
+          model: v.model,
+          year: v.year,
+          category: v.category,
+          photo: v.photo.try(:url) || ""
+        }},
         avatar: client.avatar_url,
         location: client.location,
         card_token: client.card_token || ""
