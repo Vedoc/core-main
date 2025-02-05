@@ -10,13 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_01_22_020207) do
-  create_schema "topology"
-
+ActiveRecord::Schema[7.1].define(version: 2025_02_05_173355) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "postgis"
-  enable_extension "postgis_topology"
 
   create_table "accounts", force: :cascade do |t|
     t.string "provider", default: "email", null: false
@@ -26,6 +23,11 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_22_020207) do
     t.datetime "reset_password_sent_at"
     t.boolean "allow_password_change", default: false
     t.datetime "remember_created_at"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.string "email", default: "", null: false
     t.boolean "employee", default: false, null: false
     t.integer "accountable_id"
@@ -36,13 +38,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_22_020207) do
     t.integer "failed_attempts"
     t.string "unlock_token"
     t.datetime "locked_at"
-    t.integer "sign_in_count"
-    t.datetime "current_sign_in_at"
-    t.datetime "last_sign_in_at"
-    t.string "current_sign_in_ip"
-    t.string "last_sign_in_ip"
-    t.datetime "confirmed_at"
     t.string "confirmation_token"
+    t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
     t.index ["accountable_type", "accountable_id"], name: "index_accounts_on_accountable_type_and_accountable_id"
@@ -76,14 +73,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_22_020207) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_admin_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
-  end
-
-  create_table "admin_users_roles", id: false, force: :cascade do |t|
-    t.bigint "admin_user_id"
-    t.bigint "role_id"
-    t.index ["admin_user_id", "role_id"], name: "index_admin_users_roles_on_admin_user_id_and_role_id"
-    t.index ["admin_user_id"], name: "index_admin_users_roles_on_admin_user_id"
-    t.index ["role_id"], name: "index_admin_users_roles_on_role_id"
   end
 
   create_table "car_categories", force: :cascade do |t|
@@ -197,17 +186,6 @@ ActiveRecord::Schema[7.1].define(version: 2025_01_22_020207) do
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_ratings_on_client_id"
     t.index ["offer_id"], name: "index_ratings_on_offer_id", unique: true
-  end
-
-  create_table "roles", force: :cascade do |t|
-    t.string "name"
-    t.string "resource_type"
-    t.bigint "resource_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["name", "resource_type", "resource_id"], name: "index_roles_on_name_and_resource_type_and_resource_id"
-    t.index ["name"], name: "index_roles_on_name"
-    t.index ["resource_type", "resource_id"], name: "index_roles_on_resource"
   end
 
   create_table "service_requests", force: :cascade do |t|

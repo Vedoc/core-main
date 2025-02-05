@@ -5,10 +5,10 @@ namespace :db do
   namespace :seed do
     desc "Import all data from CSV files"
     task all: :environment do
-      Rake::Task["db:seed:clients"].invoke
-      Rake::Task["db:seed:accounts"].invoke
-      Rake::Task["db:seed:shops"].invoke
-      Rake::Task["db:seed:vehicles"].invoke
+      # Import in the correct order based on dependencies
+      %w[clients accounts shops vehicles].each do |task_name|
+        Rake::Task["db:seed:#{task_name}"].invoke
+      end
     end
 
     def read_csv(file_path)
@@ -36,18 +36,44 @@ namespace :db do
       file_path = Rails.root.join('db/seeds/clients.csv')
       if File.exist?(file_path)
         read_csv(file_path).each do |row|
-          Client.find_or_create_by!(
-            id: row['Id'],
-            name: row['Name'],
-            location: row['Location'],
-            address: row['Address'],
-            phone: row['Phone'],
-            avatar: row['Avatar'],
-            created_at: row['Created at'],
-            updated_at: row['Updated at']
-          )
+          begin
+            location_str = row['Location']&.gsub('POINT (', '')&.gsub(')', '')
+            longitude, latitude = location_str&.split(' ')&.map(&:to_f)
+            
+            # Find existing client by ID or phone
+            client = Client.find_by(id: row['Id']) || Client.find_by(phone: row['Phone'])
+            
+            if client
+              # Update existing client
+              client.update!(
+                name: row['Name'].presence || client.name,
+                location: longitude && latitude ? "POINT(#{longitude} #{latitude})" : client.location,
+                address: row['Address'].presence || client.address,
+                avatar: row['Avatar'].presence || client.avatar,
+                created_at: row['Created at'] || client.created_at,
+                updated_at: row['Updated at'] || client.updated_at
+              )
+            else
+              # Create new client
+              client = Client.create!(
+                id: row['Id'],
+                name: row['Name'].presence || '',
+                location: longitude && latitude ? "POINT(#{longitude} #{latitude})" : nil,
+                address: row['Address'],
+                phone: row['Phone'],
+                avatar: row['Avatar'],
+                created_at: row['Created at'],
+                updated_at: row['Updated at']
+              )
+            end
+
+            puts "Processed client #{client.id}: #{client.name}"
+          rescue StandardError => e
+            puts "Error processing client #{row['Id']}: #{e.message}"
+            puts "Row data: #{row.to_h}"
+          end
         end
-        puts "Clients imported successfully"
+        puts "Clients import completed"
       else
         puts "File not found: #{file_path}"
       end
@@ -58,41 +84,68 @@ namespace :db do
       file_path = Rails.root.join('db/seeds/accounts.csv')
       if File.exist?(file_path)
         read_csv(file_path).each do |row|
-          # Parse tokens string to hash, default to empty hash if invalid
-          tokens = begin
-                    JSON.parse(row['Tokens'] || '{}')
-                  rescue JSON::ParserError
-                    {}
-                  end
+          begin
+            # Parse tokens string to hash, default to empty hash if invalid
+            tokens = begin
+                      JSON.parse(row['Tokens'] || '{}')
+                    rescue JSON::ParserError
+                      {}
+                    end
 
-          # Find or create the accountable record (Shop or Client)
-          accountable_type = row['Accountable type']
-          accountable = accountable_type.constantize.find_or_create_by!(
-            name: row['Email'].split('@').first # Use email username as name
-          )
+            # Find or create the accountable record (Shop or Client)
+            accountable_type = row['Accountable type']
+            
+            if accountable_type == 'Shop'
+              # First try to find existing shop
+              shop_name = row['Email'].split('@').first
+              accountable = Shop.find_by(name: shop_name)
+              
+              unless accountable
+                # Create new shop with required fields
+                accountable = Shop.create!(
+                  name: shop_name,
+                  owner_name: 'Default Owner',
+                  hours_of_operation: '9:00 AM - 5:00 PM',
+                  categories: [1], # Using integer array as per schema
+                  phone: '+1 (000) 000-0000',
+                  location: 'POINT(-95.3698 29.7604)',
+                  techs_per_shift: 1,
+                  address: 'Default Address',
+                  pictures: ['default.jpg'], # Add at least one picture
+                  approved: true # Set to true for seed data
+                )
+              end
+            else
+              accountable = Client.find_or_create_by!(
+                name: row['Email'].split('@').first,
+                phone: row['Phone'].presence || '+1 (000) 000-0000'
+              )
+            end
 
-          account = Account.new(
-            id: row['Id'],
-            provider: row['Provider'],
-            uid: row['Uid'],
-            password: 'password123', # Set a default password
-            password_confirmation: 'password123',
-            email: row['Email'],
-            employee: row['Employee'] == 'true',
-            accountable: accountable,
-            accountable_type: accountable_type,
-            tokens: tokens,
-            created_at: row['Created at'],
-            updated_at: row['Updated at']
-          )
-          
-          # Skip validation to keep the encrypted password from CSV
-          account.encrypted_password = row['Encrypted password']
-          account.save!(validate: false)
-          
-          puts "Created account for #{row['Email']}"
+            # Create or update account
+            account = Account.find_or_initialize_by(id: row['Id'])
+            account.assign_attributes(
+              provider: row['Provider'],
+              uid: row['Uid'],
+              email: row['Email'],
+              employee: row['Employee'] == 'true',
+              accountable: accountable,
+              accountable_type: accountable_type,
+              tokens: tokens,
+              created_at: row['Created at'],
+              updated_at: row['Updated at']
+            )
+            
+            account.encrypted_password = row['Encrypted password']
+            account.save!(validate: false)
+            
+            puts "Processed account for #{row['Email']}"
+          rescue StandardError => e
+            puts "Error processing account #{row['Id']}: #{e.message}"
+            puts "Row data: #{row.to_h}"
+          end
         end
-        puts "Accounts imported successfully"
+        puts "Accounts import completed"
       else
         puts "File not found: #{file_path}"
       end
@@ -154,12 +207,20 @@ namespace :db do
     task vehicles: :environment do
       file_path = Rails.root.join('db/seeds/vehicles.csv')
       if File.exist?(file_path)
+        # Create a default client for seed data if none exists
+        default_client = Client.find_or_create_by!(
+          name: 'Seed Client',
+          phone: '+1 (000) 000-0000',
+          address: 'Default Address'
+        )
+
         read_csv(file_path).each do |row|
           Vehicle.find_or_create_by!(
             year: row['Year'],
             make: row['Make'],
             model: row['Model'],
             category: row['Category'],
+            client: default_client, # Associate with default client
             created_at: row['createdAt'],
             updated_at: row['updatedAt']
           )
@@ -169,5 +230,50 @@ namespace :db do
         puts "File not found: #{file_path}"
       end
     end
+  end
+end
+
+module CsvImporter
+  def self.process_csv(file_path, model_class, mapping)
+    return puts "File not found: #{file_path}" unless File.exist?(file_path)
+
+    encodings = ['UTF-8', 'ISO-8859-1', 'Windows-1252']
+    
+    encodings.each do |encoding|
+      begin
+        content = File.read(file_path, encoding: encoding)
+        content = content.force_encoding('UTF-8')
+        content = content.sub("\xEF\xBB\xBF", '') # Remove BOM
+        
+        CSV.parse(content, headers: true) do |row|
+          attributes = {}
+          mapping.each do |target_key, source_key|
+            value = row[source_key]
+            attributes[target_key] = value unless value.nil?
+          end
+          
+          # Try to find existing record first
+          existing = model_class.find_by(attributes.slice(:id)) if attributes[:id]
+          
+          if existing
+            existing.update!(attributes)
+          else
+            model_class.create!(attributes)
+          end
+        end
+        
+        puts "Successfully imported #{model_class} data"
+        return true
+      rescue CSV::MalformedCSVError, Encoding::InvalidByteSequenceError => e
+        puts "Failed with encoding #{encoding}: #{e.message}"
+        next
+      rescue ActiveRecord::RecordInvalid => e
+        puts "Error processing row: #{e.message}"
+        next
+      end
+    end
+    
+    puts "Failed to process CSV with any known encoding"
+    false
   end
 end 
