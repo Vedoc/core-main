@@ -5,38 +5,41 @@ namespace :db do
   namespace :seed do
     desc "Import all data from CSV files"
     task all: :environment do
+      puts "Starting import process..."
+      
       # Import in the correct order based on dependencies
       %w[clients accounts shops vehicles].each do |task_name|
-        Rake::Task["db:seed:#{task_name}"].invoke
+        puts "\nProcessing #{task_name}..."
+        begin
+          Rake::Task["db:seed:#{task_name}"].invoke
+        rescue => e
+          puts "Error processing #{task_name}: #{e.message}"
+          puts e.backtrace.join("\n")
+        end
       end
     end
 
     def read_csv(file_path)
-      # Get the file encoding using file command
+      puts "Reading file: #{file_path}"
       encoding = `file -i #{file_path}`.split('charset=').last.strip
       
       # Map file command charset to Ruby encoding names
       encoding_map = {
-        'iso-8859-1' => 'ISO-8859-1',
-        'binary' => 'ISO-8859-1', # Treat binary as ISO-8859-1
-        'us-ascii' => 'US-ASCII',
+        'binary' => 'ISO-8859-1',
+        'us-ascii' => 'UTF-8',
         'utf-8' => 'UTF-8'
       }
       
       ruby_encoding = encoding_map[encoding.downcase] || 'UTF-8'
+      puts "Using encoding: #{ruby_encoding}"
       
       begin
         content = File.read(file_path, encoding: ruby_encoding)
-        # Force to UTF-8 and replace invalid characters
-        content = content.encode('UTF-8', 
-                               invalid: :replace, 
-                               undef: :replace, 
-                               replace: '?')
-        # Remove BOM if present
-        content = content.sub("\xEF\xBB\xBF", '')
+        content = content.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+        content = content.sub("\xEF\xBB\xBF", '') # Remove BOM if present
         CSV.parse(content, headers: true)
       rescue => e
-        puts "Error reading file #{file_path} with encoding #{ruby_encoding}: #{e.message}"
+        puts "Error reading file #{file_path}: #{e.message}"
         raise
       end
     end
@@ -45,8 +48,17 @@ namespace :db do
     task clients: :environment do
       file_path = Rails.root.join('db/seeds/clients.csv')
       if File.exist?(file_path)
-        read_csv(file_path).each do |row|
+        puts "Importing clients..."
+        csv = read_csv(file_path)
+        total = csv.count
+        
+        csv.each_with_index do |row, index|
           begin
+            # Print progress every 100 records
+            if (index + 1) % 100 == 0
+              puts "Processed #{index + 1}/#{total} clients..."
+            end
+            
             location_str = row['Location']&.gsub('POINT (', '')&.gsub(')', '')
             longitude, latitude = location_str&.split(' ')&.map(&:to_f)
             
@@ -78,14 +90,14 @@ namespace :db do
             end
 
             puts "Processed client #{client.id}: #{client.name}"
-          rescue StandardError => e
-            puts "Error processing client #{row['Id']}: #{e.message}"
-            puts "Row data: #{row.to_h}"
+          rescue => e
+            puts "Error processing client row #{index + 1}: #{e.message}"
+            next
           end
         end
         puts "Clients import completed"
       else
-        puts "File not found: #{file_path}"
+        puts "Clients CSV file not found at #{file_path}"
       end
     end
 
