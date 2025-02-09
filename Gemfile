@@ -143,3 +143,5 @@ gem 'ffi', '~> 1.15'
 gem 'smarter_csv'
 
 gem 'omniauth'
+
+gem 'utf8-cleaner'
