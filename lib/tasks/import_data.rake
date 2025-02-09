@@ -12,23 +12,33 @@ namespace :db do
     end
 
     def read_csv(file_path)
-      # Try different encodings if UTF-8 fails
-      encodings = ['UTF-8', 'ISO-8859-1', 'Windows-1252']
+      # Get the file encoding using file command
+      encoding = `file -i #{file_path}`.split('charset=').last.strip
       
-      encodings.each do |encoding|
-        begin
-          content = File.read(file_path, encoding: encoding)
-          # Remove BOM if present
-          content = content.force_encoding('UTF-8')
-          content = content.sub("\xEF\xBB\xBF", '')
-          return CSV.parse(content, headers: true)
-        rescue CSV::MalformedCSVError, Encoding::InvalidByteSequenceError => e
-          puts "Failed with encoding #{encoding}: #{e.message}"
-          next
-        end
+      # Map file command charset to Ruby encoding names
+      encoding_map = {
+        'iso-8859-1' => 'ISO-8859-1',
+        'binary' => 'ISO-8859-1', # Treat binary as ISO-8859-1
+        'us-ascii' => 'US-ASCII',
+        'utf-8' => 'UTF-8'
+      }
+      
+      ruby_encoding = encoding_map[encoding.downcase] || 'UTF-8'
+      
+      begin
+        content = File.read(file_path, encoding: ruby_encoding)
+        # Force to UTF-8 and replace invalid characters
+        content = content.encode('UTF-8', 
+                               invalid: :replace, 
+                               undef: :replace, 
+                               replace: '?')
+        # Remove BOM if present
+        content = content.sub("\xEF\xBB\xBF", '')
+        CSV.parse(content, headers: true)
+      rescue => e
+        puts "Error reading file #{file_path} with encoding #{ruby_encoding}: #{e.message}"
+        raise
       end
-      
-      raise "Failed to read CSV with any known encoding"
     end
 
     desc "Import clients from CSV"
