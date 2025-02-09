@@ -481,6 +481,8 @@ GEM
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     uri (1.0.2)
+    utf8-cleaner (1.0.0)
+      activesupport
     warden (1.2.9)
       rack (>= 2.0.9)
     websocket-driver (0.7.7)
@@ -532,6 +534,7 @@ DEPENDENCIES
   smarter_csv
   stripe
   tzinfo-data
+  utf8-cleaner
   vedoc-plugin!
 
 RUBY VERSION
