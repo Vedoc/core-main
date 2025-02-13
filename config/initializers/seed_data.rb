@@ -1,8 +1,31 @@
 # Only run in production and if DB exists
-if Rails.env.production? && 
-   Rails.application.config.auto_seed_production && 
-   ActiveRecord::Base.connection.table_exists?('clients')
+if Rails.env.production? && Rails.application.config.auto_seed_production
   begin
+    # Wait for dependent services to be ready
+    Rails.application.config.service_dependencies.each do |service|
+      retries = 0
+      max_retries = 30  # 5 minutes total (10 seconds * 30)
+      
+      until retries >= max_retries
+        begin
+          # Try to connect to dependent service's health check endpoint
+          uri = URI("http://#{service}/health")
+          response = Net::HTTP.get_response(uri)
+          
+          break if response.is_a?(Net::HTTPSuccess)
+        rescue StandardError => e
+          Rails.logger.warn "Waiting for #{service} to be ready... (#{retries + 1}/#{max_retries})"
+          retries += 1
+          sleep 10
+        end
+      end
+      
+      if retries >= max_retries
+        Rails.logger.error "Timeout waiting for #{service} service"
+        exit 1
+      end
+    end
+
     # Check if we need to seed
     if Client.count.zero? || Shop.count.zero? || Vehicle.count.zero?
       puts "Database appears empty. Starting automatic seed process..."

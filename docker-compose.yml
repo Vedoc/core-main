@@ -67,6 +67,8 @@ services:
       - MONGO_HOST=${MONGO_HOST}
       - MONGO_COLLECTION=${MONGO_COLLECTION}
       - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+      - AUTO_SEED_PRODUCTION=true
+      - WAIT_FOR_SERVICES=my_admin
     ports:
       - '3000:3000'
     networks:
@@ -79,6 +81,8 @@ services:
       db:
         condition: service_healthy
       redis:
+        condition: service_healthy
+      my_admin:
         condition: service_healthy
 
   worker:
