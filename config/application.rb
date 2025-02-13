@@ -50,8 +50,8 @@ module VedocApi
     config.action_dispatch.show_exceptions = true
 
     # Add this line to control auto-seeding
-    config.auto_seed_production = ENV.fetch('AUTO_SEED_PRODUCTION', 'true') == 'true'
-    config.service_name = 'core'  # Identify this service
+    # config.auto_seed_production = ENV.fetch('AUTO_SEED_PRODUCTION', 'true') == 'true'
+    # config.service_name = 'core'  # Identify this service
     # config.service_dependencies = ['my_admin']  # List services this depends on
   end
 end
