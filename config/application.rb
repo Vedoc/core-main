@@ -48,5 +48,8 @@ module VedocApi
 
     Rails.application.config.hosts.clear
     config.action_dispatch.show_exceptions = true
+
+    # Add this line to control auto-seeding
+    config.auto_seed_production = ENV.fetch('AUTO_SEED_PRODUCTION', 'true') == 'true'
   end
 end
