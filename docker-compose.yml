@@ -82,8 +82,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      my_admin:
-        condition: service_healthy
 
   worker:
     <<: *app_base
