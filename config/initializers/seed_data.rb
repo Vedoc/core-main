@@ -1,14 +1,3 @@
-# Define custom configuration options
-module SeedConfiguration
-  extend ActiveSupport::Concern
-  
-  included do
-    config_accessor :auto_seed_production, :allow_production_seeds, :service_dependencies
-  end
-end
-
-Rails::Application::Configuration.include(SeedConfiguration)
-
 # Configure seeding options first
 Rails.application.configure do
   # Allow manual seeding in production if explicitly enabled
