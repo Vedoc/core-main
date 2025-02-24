@@ -1,4 +1,23 @@
-# Only run in production and if DB exists
+# Configure seeding options first
+Rails.application.configure do
+  # Allow auto-seeding in production
+  config.auto_seed_production = ENV['AUTO_SEED_PRODUCTION'].present?
+  
+  # Allow manual seeding in production if explicitly enabled
+  config.allow_production_seeds = ENV['ALLOW_PRODUCTION_SEEDS'].present?
+  
+  # Initialize service dependencies if not already set
+  config.service_dependencies ||= []
+end
+
+# Prevent accidental seeding in production unless explicitly allowed
+if Rails.env.production? && !Rails.application.config.allow_production_seeds
+  puts "WARNING: Seeding in production is disabled by default."
+  puts "To enable, set ALLOW_PRODUCTION_SEEDS=true in your environment."
+  abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present?
+end
+
+# Only run automatic seeding in production and if DB exists
 if Rails.env.production? && Rails.application.config.auto_seed_production
   begin
     # Wait for dependent services to be ready
@@ -56,16 +75,4 @@ if Rails.env.production? && Rails.application.config.auto_seed_production
   rescue => e
     Rails.logger.error "Error checking database: #{e.message}"
   end
-end
-
-Rails.application.configure do
-  # Only allow seeding in production if explicitly enabled
-  config.allow_production_seeds = ENV['ALLOW_PRODUCTION_SEEDS'].present?
-end
-
-# Prevent accidental seeding in production unless explicitly allowed
-if Rails.env.production? && !Rails.application.config.allow_production_seeds
-  puts "WARNING: Seeding in production is disabled by default."
-  puts "To enable, set ALLOW_PRODUCTION_SEEDS=true in your environment."
-  abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present?
 end 
