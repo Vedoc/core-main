@@ -67,4 +67,5 @@ end
 if Rails.env.production? && !Rails.application.config.allow_production_seeds
   puts "WARNING: Seeding in production is disabled by default."
   puts "To enable, set ALLOW_PRODUCTION_SEEDS=true in your environment."
-  abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present? 
+  abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present?
+end 
