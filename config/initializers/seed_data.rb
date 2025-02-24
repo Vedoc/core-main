@@ -56,4 +56,15 @@ if Rails.env.production? && Rails.application.config.auto_seed_production
   rescue => e
     Rails.logger.error "Error checking database: #{e.message}"
   end
-end 
+end
+
+Rails.application.configure do
+  # Only allow seeding in production if explicitly enabled
+  config.allow_production_seeds = ENV['ALLOW_PRODUCTION_SEEDS'].present?
+end
+
+# Prevent accidental seeding in production unless explicitly allowed
+if Rails.env.production? && !Rails.application.config.allow_production_seeds
+  puts "WARNING: Seeding in production is disabled by default."
+  puts "To enable, set ALLOW_PRODUCTION_SEEDS=true in your environment."
+  abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present? 
