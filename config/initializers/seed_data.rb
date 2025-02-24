@@ -1,13 +1,19 @@
-# Configure seeding options first
+# Define custom configuration options
+module SeedConfiguration
+  extend ActiveSupport::Concern
+  
+  included do
+    config_accessor :auto_seed_production, :allow_production_seeds, :service_dependencies
+  end
+end
+
+Rails::Application::Configuration.include(SeedConfiguration)
+
+# Configure seeding options
 Rails.application.configure do
-  # Allow auto-seeding in production
   config.auto_seed_production = ENV['AUTO_SEED_PRODUCTION'].present?
-  
-  # Allow manual seeding in production if explicitly enabled
   config.allow_production_seeds = ENV['ALLOW_PRODUCTION_SEEDS'].present?
-  
-  # Initialize service dependencies if not already set
-  config.service_dependencies ||= []
+  config.service_dependencies = []
 end
 
 # Prevent accidental seeding in production unless explicitly allowed
@@ -17,62 +23,31 @@ if Rails.env.production? && !Rails.application.config.allow_production_seeds
   abort("Aborting seed operation in production") unless ENV['DISABLE_DATABASE_ENVIRONMENT_CHECK'].present?
 end
 
-# Only run automatic seeding in production and if DB exists
+# Only run automatic seeding in production if enabled
 if Rails.env.production? && Rails.application.config.auto_seed_production
   begin
-    # Wait for dependent services to be ready
-    Rails.application.config.service_dependencies.each do |service|
-      retries = 0
-      max_retries = 30  # 5 minutes total (10 seconds * 30)
-      
-      until retries >= max_retries
-        begin
-          # Try to connect to dependent service's health check endpoint
-          uri = URI("http://#{service}/health")
-          response = Net::HTTP.get_response(uri)
-          
-          break if response.is_a?(Net::HTTPSuccess)
-        rescue StandardError => e
-          Rails.logger.warn "Waiting for #{service} to be ready... (#{retries + 1}/#{max_retries})"
-          retries += 1
-          sleep 10
-        end
-      end
-      
-      if retries >= max_retries
-        Rails.logger.error "Timeout waiting for #{service} service"
-        exit 1
-      end
-    end
-
     # Check if we need to seed
-    if Client.count.zero? || Shop.count.zero? || Vehicle.count.zero?
+    if defined?(Client) && defined?(Shop) && defined?(Vehicle) &&
+       (Client.count.zero? || Shop.count.zero? || Vehicle.count.zero?)
       puts "Database appears empty. Starting automatic seed process..."
       
-      # Run seeds asynchronously to not block server startup
-      Thread.new do
-        begin
-          # Convert files to UTF-8 first
-          %w[clients accounts shops vehicles].each do |file|
-            path = Rails.root.join('db', 'seeds', "#{file}.csv")
-            next unless File.exist?(path)
-            
-            content = File.read(path)
-            content.encode!('UTF-8', 'UTF-8', invalid: :replace, undef: :replace, replace: '?')
-            content.sub!("\xEF\xBB\xBF", '') # Remove BOM if present
-            
-            File.write(path, content)
-          end
-
-          # Run seeds
-          Rake::Task['db:seed:all'].invoke
-        rescue => e
-          Rails.logger.error "Error during automatic seeding: #{e.message}"
-          Rails.logger.error e.backtrace.join("\n")
-        end
+      # Convert files to UTF-8 first
+      %w[clients accounts shops vehicles].each do |file|
+        path = Rails.root.join('db', 'seeds', "#{file}.csv")
+        next unless File.exist?(path)
+        
+        content = File.read(path)
+        content.encode!('UTF-8', 'UTF-8', invalid: :replace, undef: :replace, replace: '?')
+        content.sub!("\xEF\xBB\xBF", '') # Remove BOM if present
+        
+        File.write(path, content)
       end
+
+      # Run seeds
+      Rake::Task['db:seed:all'].invoke
     end
   rescue => e
-    Rails.logger.error "Error checking database: #{e.message}"
+    Rails.logger.error "Error during seeding: #{e.message}"
+    Rails.logger.error e.backtrace.join("\n")
   end
 end 
