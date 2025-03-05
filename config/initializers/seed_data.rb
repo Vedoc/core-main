@@ -1,3 +1,12 @@
+# Check either environment variable or configuration
+if Rails.env.production? && !ENV['ALLOW_PRODUCTION_SEEDS'].present? && !ENV['AUTO_SEED_PRODUCTION'].present?
+  # Disable database tasks in production unless explicitly allowed
+  if Rake.application.top_level_tasks.any? { |task| task.include?('db:seed') }
+    puts "Seeding is disabled in production unless ALLOW_PRODUCTION_SEEDS=true or AUTO_SEED_PRODUCTION=true"
+    exit
+  end
+end
+
 # Only run in production and if DB exists
 if Rails.env.production? && Rails.application.config.auto_seed_production
   begin
